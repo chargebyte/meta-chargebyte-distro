@@ -1,0 +1,38 @@
+#!/bin/sh
+# Create platform specific environment variables for mini-snmpd
+
+ENVFILE=/run/mini-snmpd/charge-control.env
+
+MODEL=$(tr -d '\0' < /proc/device-tree/model)
+mkdir -p "$(dirname "$ENVFILE")"
+
+case "$MODEL" in
+*EVAcharge*)
+	cat <<-EOF > "$ENVFILE"
+	LISTEN_INTERFACE="-I eth0"
+	MONITOR_INTERFACES="-i eth0,eth1"
+	EOF
+	;;
+
+*"Tarragon Master")
+	cat <<-EOF > "$ENVFILE"
+	LISTEN_INTERFACE=""
+	MONITOR_INTERFACES="-i br0,eth1,eth2"
+	EOF
+	;;
+
+*"Tarragon Slave")
+	cat <<-EOF > "$ENVFILE"
+	LISTEN_INTERFACE=""
+	MONITOR_INTERFACES="-i br0,eth1"
+	EOF
+	;;
+
+*)
+	cat <<-EOF > "$ENVFILE"
+	LISTEN_INTERFACE=""
+	MONITOR_INTERFACES=""
+	EOF
+esac
+
+exit 0

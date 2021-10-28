@@ -1,0 +1,16 @@
+--- a/mini-snmpd.service.in
++++ b/mini-snmpd.service.in
+@@ -5,9 +5,12 @@
+ Requires=network-online.target
+ 
+ [Service]
++EnvironmentFile=-/etc/device_info
++EnvironmentFile=-/run/mini-snmpd/charge-control.env
+ EnvironmentFile=-/etc/default/mini-snmpd
+ Type=simple
+-ExecStart=@SBINDIR@/mini-snmpd -ns $DAEMON_OPTS
++ExecStartPre=@SBINDIR@/cc-mini-snmpd-env
++ExecStart=@SBINDIR@/mini-snmpd -ns -D ${DEVICE_PRODUCT} $DAEMON_OPTS $LISTEN_INTERFACE $MONITOR_INTERFACES
+ StandardOutput=null
+ Restart=on-failure
+ 

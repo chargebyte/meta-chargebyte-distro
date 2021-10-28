@@ -1,0 +1,1 @@
+DAEMON_OPTS="-a -c public -d /,/var/log,/srv,/run"
