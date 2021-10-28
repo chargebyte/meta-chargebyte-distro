@@ -1,0 +1,15 @@
+[Unit]
+Description=LED boot notification
+#
+# This script sets the green LED to on after successfully booting of the board. 
+#
+After=rauc-mark-good.service
+Requires=watchdogd.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo none > /sys/class/leds/evse:green:led3/trigger && echo 200 > /sys/class/leds/evse:green:led3/brightness'
+SyslogFacility=local0
+
+[Install]
+WantedBy=multi-user.target

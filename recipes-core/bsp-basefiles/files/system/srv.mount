@@ -1,0 +1,9 @@
+[Unit]
+Description=Data Partition File System
+
+[Mount]
+What=/dev/mmcblk0p5
+Where=/srv
+
+[Install]
+WantedBy=sysinit.target

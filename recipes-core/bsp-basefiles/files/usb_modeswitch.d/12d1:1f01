@@ -1,0 +1,18 @@
+# Huawei E353 (3.se) and others
+
+#
+# we want the HiLink mode for now (which is default, but we select it explicitely here)
+#
+
+TargetVendor=0x12d1
+TargetProductList="14db,14dc"
+HuaweiNewMode=1
+
+#
+# the other mode can enable with the following
+#
+
+#TargetVendor=0x12d1
+#TargetProductList="155e"
+#HuaweiNewMode=0
+#MessageContent="55534243123456780000000000000011063000000100010000000000000000"
