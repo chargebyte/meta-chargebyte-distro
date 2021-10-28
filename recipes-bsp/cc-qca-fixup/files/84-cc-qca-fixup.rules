@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", ACTION=="add", ENV{ID_NET_DRIVER}=="qcaspi", TAG+="systemd", ENV{SYSTEMD_WANTS}+="cc-qca-fixup@%k.service"

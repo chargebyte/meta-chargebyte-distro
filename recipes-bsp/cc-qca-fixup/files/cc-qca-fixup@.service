@@ -1,0 +1,8 @@
+[Unit]
+Description=QCA7000 Startup Fixup
+Before=network-pre.target cc-qca-fw-update@%i.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/cc-qca-fixup.sh
+Environment="IFACE=%i"
