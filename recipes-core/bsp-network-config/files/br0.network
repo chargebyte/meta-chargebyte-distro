@@ -1,0 +1,15 @@
+[Match]
+Name=br0
+
+[Link]
+RequiredForOnline=no
+
+[Network]
+DHCP=yes
+
+[DHCPv4]
+ClientIdentifier=mac
+
+[Address]
+Label=br0:fallback
+Address=169.254.12.53/16

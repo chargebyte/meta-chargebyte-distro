@@ -1,0 +1,7 @@
+[Match]
+Name=eth1
+Driver=qcaspi
+
+[Network]
+DHCP=no
+IPv6AcceptRA=no

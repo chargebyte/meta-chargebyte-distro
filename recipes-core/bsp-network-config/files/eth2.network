@@ -1,0 +1,17 @@
+[Match]
+Name=eth2
+Driver=qcaspi
+
+[Link]
+RequiredForOnline=no
+
+[Network]
+IPMasquerade=yes
+DHCP=yes
+
+[DHCPv4]
+ClientIdentifier=mac
+RouteMetric=2048
+
+[DHCPv6]
+RouteMetric=2048

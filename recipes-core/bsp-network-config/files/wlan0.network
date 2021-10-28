@@ -1,0 +1,9 @@
+[Match]
+Name=wlan0
+
+[Link]
+RequiredForOnline=no
+
+[Network]
+DHCP=no
+IPv6AcceptRA=no

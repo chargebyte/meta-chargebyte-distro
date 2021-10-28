@@ -1,0 +1,9 @@
+[Match]
+Name=eth* usb*
+Driver=cdc_ether rndis_host
+
+[Link]
+RequiredForOnline=no
+
+[Network]
+Bridge=br0
