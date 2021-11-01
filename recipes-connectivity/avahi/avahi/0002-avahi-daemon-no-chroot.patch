@@ -1,0 +1,13 @@
+Index: avahi-0.7/avahi-daemon/avahi-daemon.service.in
+===================================================================
+--- avahi-0.7.orig/avahi-daemon/avahi-daemon.service.in
++++ avahi-0.7/avahi-daemon/avahi-daemon.service.in
+@@ -23,7 +23,7 @@ After=systemd-resolved.service
+ [Service]
+ Type=dbus
+ BusName=org.freedesktop.Avahi
+-ExecStart=@sbindir@/avahi-daemon -s
++ExecStart=@sbindir@/avahi-daemon -s --no-chroot
+ ExecReload=@sbindir@/avahi-daemon -r
+ NotifyAccess=main
+ 
