@@ -1,0 +1,29 @@
+From 2065a8d8af27c6cb1e40c9462b5933336dca7434 Mon Sep 17 00:00:00 2001
+From: Paul Elliott <paul.elliott@arm.com>
+Date: Wed, 17 Mar 2021 13:12:22 +0000
+Subject: [PATCH 2/2] Reduce level of -Wformat-truncation
+
+Reduce level of format truncation warnings due to issues with false
+positives (an unknown size buffer is always treated as size 1)
+
+Signed-off-by: Paul Elliott <paul.elliott@arm.com>
+---
+ CMakeLists.txt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2ab2e01eb..14ca7b696 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -198,7 +198,7 @@ if(CMAKE_COMPILER_IS_GNU)
+         endif()
+     endif()
+     if (GCC_VERSION VERSION_GREATER 7.0 OR GCC_VERSION VERSION_EQUAL 7.0)
+-      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wformat-overflow=2 -Wformat-truncation=2")
++      set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wformat-overflow=2 -Wformat-truncation")
+     endif()
+     set(CMAKE_C_FLAGS_RELEASE     "-O2")
+     set(CMAKE_C_FLAGS_DEBUG       "-O0 -g3")
+-- 
+2.17.1
+
