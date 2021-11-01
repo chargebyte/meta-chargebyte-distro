@@ -1,0 +1,2 @@
+# disable python
+PACKAGECONFIG ?= "locale"
