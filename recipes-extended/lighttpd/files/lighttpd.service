@@ -1,0 +1,13 @@
+[Unit]
+Description=Lightning Fast Webserver With Light System Requirements
+After=network.target
+
+[Service]
+ExecStartPre=@SBINDIR@/lighttpd -t -f @SYSCONFDIR@/lighttpd.conf
+ExecStartPre=-+/usr/bin/install -d -m 0770 -o root -g www-data /var/run/lighttpd
+ExecStartPre=-+/usr/bin/install -d -m 0750 -o www-data -g www-data /var/log/lighttpd
+ExecStart=@SBINDIR@/lighttpd -D -f @SYSCONFDIR@/lighttpd.conf
+ExecReload=@BASE_BINDIR@/kill -HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target

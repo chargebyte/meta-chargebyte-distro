@@ -1,0 +1,12 @@
+/var/log/lighttpd/*.log {
+	weekly
+	missingok
+	rotate 12
+	compress
+	delaycompress
+	notifempty
+	sharedscripts
+	postrotate
+		systemctl kill -s HUP lighttpd.service > /dev/null
+	endscript
+}
