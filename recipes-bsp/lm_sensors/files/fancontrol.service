@@ -1,0 +1,12 @@
+[Unit]
+Description=Start fan control, if configured
+ConditionFileNotEmpty=/etc/fancontrol
+ConditionPathExists=/sys/class/hwmon/hwmon0/fan1_input
+
+[Service]
+Type=simple
+PIDFile=/run/fancontrol.pid
+ExecStart=/usr/sbin/fancontrol
+
+[Install]
+WantedBy=multi-user.target
