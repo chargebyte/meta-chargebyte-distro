@@ -1,0 +1,9 @@
+--- a/examples/logrotate.service
++++ b/examples/logrotate.service
+@@ -24,3 +24,6 @@
+ ProtectKernelModules=true
+ ProtectSystem=full
+ RestrictRealtime=true
++
++[Install]
++WantedBy=multi-user.target
