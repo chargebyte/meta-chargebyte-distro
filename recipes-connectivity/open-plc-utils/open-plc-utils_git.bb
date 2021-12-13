@@ -1,9 +1,9 @@
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=7d83a9e9a9788beb9357262af385f6c7"
 
-SRC_URI = "git://github.com/I2SE/open-plc-utils.git;protocol=https;branch=fix-chipset-reporting"
+SRC_URI = "git://github.com/qca/open-plc-utils.git;protocol=https"
 
-SRCREV = "00a31f20941417a02b1cdaa31785a48e7a6daaa5"
+SRCREV = "358dfcf78bdaf7b0b13dcdf91cb1aae1789f2770"
 PV = "0.0.6+git${SRCPV}"
 S = "${WORKDIR}/git"
 
