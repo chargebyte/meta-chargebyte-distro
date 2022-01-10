@@ -12,9 +12,9 @@ inherit autotools pkgconfig
 
 SRC_URI = "git://github.com/I2SE/libmodbus.git;protocol=https;branch=i2se-master"
 
-SRCREV = "fa2976d5dfdda175e8dde205b1686ad68fca99f2"
+SRCREV = "6aeadb14324002d28b3df9d01242cd416058e614"
 
-PV = "3.1.6+git${SRCPV}"
+PV = "3.1.7+git${SRCPV}"
 S = "${WORKDIR}/git"
 
 DEFAULT_PREFERENCE = "1"
