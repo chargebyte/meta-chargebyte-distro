@@ -21,8 +21,12 @@ RDEPENDS_${PN} = " \
     memtester \
     nano \
     openssl-bin \
+    python-serial \
+    python-shell \
     python3 \
     python3-pip \
+    python3-serial \
+    python3-shell \
     screen \
     ser2net \
     socat \
