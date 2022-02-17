@@ -20,8 +20,4 @@ if [ ! -e "$STAMP" ]; then
         run_rc_once && : > "$STAMP"
 fi
 
-# Switch both RS485 to 115200 baud
-stty -F /dev/ttymxc0 115200
-test -f /dev/ttymxc4 && stty -F /dev/ttymxc4 115200
-
 exit 0
