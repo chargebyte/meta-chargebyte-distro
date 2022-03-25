@@ -1,7 +1,7 @@
 LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=7d83a9e9a9788beb9357262af385f6c7"
 
-SRC_URI = "git://github.com/qca/open-plc-utils.git;protocol=https"
+SRC_URI = "git://github.com/qca/open-plc-utils.git;protocol=https;branch=master"
 
 SRCREV = "358dfcf78bdaf7b0b13dcdf91cb1aae1789f2770"
 PV = "0.0.6+git${SRCPV}"
