@@ -1,6 +1,6 @@
 PACKAGECONFIG ?= "openssl"
 
-do_install_append () {
+do_install:append () {
 	# remove non-systemd-networkd stuff
 	rm -rf ${D}${sysconfdir}/network
 

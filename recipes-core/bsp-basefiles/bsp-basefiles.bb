@@ -83,11 +83,11 @@ do_install() {
     echo "DEVICE_FLAVOR='${FLAVOR}'" >> ${D}/etc/device_info
 }
 
-FILES_${PN} = "/"
+FILES:${PN} = "/"
 
-SYSTEMD_SERVICE_${PN} = "srv.mount usb-mount@.service"
+SYSTEMD_SERVICE:${PN} = "srv.mount usb-mount@.service"
 
-RDEPENDS_${PN} += " \
+RDEPENDS:${PN} += " \
     e2fsprogs-e2fsck \
     e2fsprogs-mke2fs \
     e2fsprogs-resize2fs \

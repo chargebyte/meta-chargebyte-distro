@@ -2,7 +2,7 @@ SUMMARY = "CPU burn app to stress ARM Cortex-A7 processor to generate as much he
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://cpuburn-a7.S;md5=41744107b14bc9d70edf09a6da09cf43"
 
-DL_DIR_append = "/${PN}-${PV}"
+DL_DIR:append = "/${PN}-${PV}"
 
 SRC_URI = "https://raw.githubusercontent.com/ssvb/cpuburn-arm/ad7e646700d14b81413297bda02fb7fe96613c3f/cpuburn-a7.S;name=ssvb"
 

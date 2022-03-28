@@ -10,7 +10,7 @@ SRC_URI = " \
     file://cc-qca-fixup@.service \
 "
 
-RDEPENDS_${PN} += "open-plc-utils"
+RDEPENDS:${PN} += "open-plc-utils"
 
 do_install() {
     install -d ${D}/usr/libexec
@@ -36,5 +36,5 @@ do_install() {
     fi
 }
 
-SYSTEMD_SERVICE_${PN} = "cc-qca-fixup@.service"
-FILES_${PN} = "/"
+SYSTEMD_SERVICE:${PN} = "cc-qca-fixup@.service"
+FILES:${PN} = "/"

@@ -17,4 +17,4 @@ do_install() {
     install -o root -g root -m 0755 ${B}/sdimage ${D}/usr/bin
 }
 
-FILES_${PN} += "/usr/bin/sdimage"
+FILES:${PN} += "/usr/bin/sdimage"

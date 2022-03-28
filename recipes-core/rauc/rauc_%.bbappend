@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
     file://system.conf \
@@ -15,7 +15,7 @@ SRC_URI += " \
     file://i2se-release.crt \
 "
 
-do_install_append() {
+do_install:append() {
     install -d ${D}/usr/lib/rauc
     install -d ${D}${sysconfdir}/rauc
     install -m 0644 ${WORKDIR}/i2se-devel.crt   ${D}${sysconfdir}/rauc/
@@ -28,6 +28,6 @@ do_install_append() {
     install -o root -g root -m 0755 ${WORKDIR}/system-info.sh  ${D}/usr/lib/rauc/
 }
 
-FILES_${PN} += " /usr/lib/rauc"
+FILES:${PN} += " /usr/lib/rauc"
 
 PACKAGECONFIG ??= "service network json nocreate"

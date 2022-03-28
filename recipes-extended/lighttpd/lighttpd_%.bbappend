@@ -1,11 +1,11 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/files:"
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://lighttpd.conf file://10-mime-types.conf file://20-mqtt.conf file://lighttpd.service file://lighttpd.logrotate"
 
 PACKAGECONFIG[lua] = "--with-lua,--without-lua,lua"
-PACKAGECONFIG_append = " lua"
+PACKAGECONFIG:append = " lua"
 
-do_install_append() {
+do_install:append() {
     # install mimetype mappings
     install -d "${D}${sysconfdir}/lighttpd.d"
     install -m 644 ${WORKDIR}/10-mime-types.conf ${D}${sysconfdir}/lighttpd.d/10-mime-types.conf
@@ -24,10 +24,10 @@ do_install_append() {
     install -m 644 ${WORKDIR}/lighttpd.logrotate ${D}${sysconfdir}/logrotate.d/lighttpd
 }
 
-FILES_${PN} += " ${sysconfdir}/lighttpd.d ${sysconfdir}/logrotate.d"
+FILES:${PN} += " ${sysconfdir}/lighttpd.d ${sysconfdir}/logrotate.d"
 
 #
-# adding the user+group prevent packaging error for do_install_append above, but
+# adding the user+group prevent packaging error for do_install:append above, but
 # since the user/group already exists nothing is added in real; don't know yet,
 # why using predefined groups does not work per se (guess: only elementary user/group
 # setup during do_install per default)
@@ -36,4 +36,4 @@ FILES_${PN} += " ${sysconfdir}/lighttpd.d ${sysconfdir}/logrotate.d"
 inherit useradd
 
 USERADD_PACKAGES = "${PN}"
-USERADD_PARAM_${PN} = "--system --home /www --no-create-home --shell /bin/false --user-group www-data;"
+USERADD_PARAM:${PN} = "--system --home /www --no-create-home --shell /bin/false --user-group www-data;"

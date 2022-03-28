@@ -41,14 +41,14 @@ python __anonymous () {
     d.setVar("SYSTEMD_BOOT_IMAGE_PREFIX", prefix)
 }
 
-FILES_${PN} = "${EFI_FILES_PATH}/${SYSTEMD_BOOT_IMAGE}"
+FILES:${PN} = "${EFI_FILES_PATH}/${SYSTEMD_BOOT_IMAGE}"
 
-RDEPENDS_${PN} += "virtual/systemd-bootconf"
+RDEPENDS:${PN} += "virtual/systemd-bootconf"
 
 # Imported from the old gummiboot recipe
-TUNE_CCARGS_remove = "-mfpmath=sse"
+TUNE_CCARGS:remove = "-mfpmath=sse"
 COMPATIBLE_HOST = "(x86_64.*|i.86.*)-linux"
-COMPATIBLE_HOST_x86-x32 = "null"
+COMPATIBLE_HOST:x86-x32 = "null"
 
 do_compile() {
 	SYSTEMD_BOOT_EFI_ARCH="ia32"

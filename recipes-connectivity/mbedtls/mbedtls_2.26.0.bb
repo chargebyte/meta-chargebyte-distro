@@ -41,9 +41,9 @@ PACKAGECONFIG[programs] = "-DENABLE_PROGRAMS=ON,-DENABLE_PROGRAMS=OFF"
 EXTRA_OECMAKE = "-DENABLE_TESTING=OFF -DLIB_INSTALL_DIR:STRING=${libdir}"
 
 PROVIDES += "polarssl"
-RPROVIDES_${PN} = "polarssl"
+RPROVIDES:${PN} = "polarssl"
 
 PACKAGES =+ "${PN}-programs"
-FILES_${PN}-programs = "${bindir}/"
+FILES:${PN}-programs = "${bindir}/"
 
 BBCLASSEXTEND = "native nativesdk"

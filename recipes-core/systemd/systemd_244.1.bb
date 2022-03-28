@@ -24,7 +24,7 @@ SRC_URI += "file://touchscreen.rules \
            "
 
 # patches needed by musl
-SRC_URI_append_libc-musl = " ${SRC_URI_MUSL}"
+SRC_URI:append:libc-musl = " ${SRC_URI_MUSL}"
 SRC_URI_MUSL = "\
                file://0002-don-t-use-glibc-specific-qsort_r.patch \
                file://0003-missing_type.h-add-__compare_fn_t-and-comparison_fn_.patch \
@@ -91,7 +91,7 @@ PACKAGECONFIG ??= " \
     xz \
 "
 
-PACKAGECONFIG_remove_libc-musl = " \
+PACKAGECONFIG:remove:libc-musl = " \
     gshadow \
     idn \
     localed \
@@ -299,7 +299,7 @@ do_install() {
     find ${D} -name systemd-hwdb-update.service -delete
 }
 
-python populate_packages_prepend (){
+python populate_packages:prepend (){
     systemdlibdir = d.getVar("rootlibdir")
     do_split_packages(d, systemdlibdir, '^lib(.*)\.so\.*', 'lib%s', 'Systemd %s library', extra_depends='', allow_links=True)
 }
@@ -321,95 +321,95 @@ PACKAGES =+ "\
     ${PN}-extra-utils \
 "
 
-SUMMARY_${PN}-container = "Tools for containers and VMs"
-DESCRIPTION_${PN}-container = "Systemd tools to spawn and manage containers and virtual machines."
+SUMMARY:${PN}-container = "Tools for containers and VMs"
+DESCRIPTION:${PN}-container = "Systemd tools to spawn and manage containers and virtual machines."
 
-SUMMARY_${PN}-journal-gatewayd = "HTTP server for journal events"
-DESCRIPTION_${PN}-journal-gatewayd = "systemd-journal-gatewayd serves journal events over the network. Clients must connect using HTTP. The server listens on port 19531 by default."
+SUMMARY:${PN}-journal-gatewayd = "HTTP server for journal events"
+DESCRIPTION:${PN}-journal-gatewayd = "systemd-journal-gatewayd serves journal events over the network. Clients must connect using HTTP. The server listens on port 19531 by default."
 
-SUMMARY_${PN}-journal-upload = "Send journal messages over the network"
-DESCRIPTION_${PN}-journal-upload = "systemd-journal-upload uploads journal entries to a specified URL."
+SUMMARY:${PN}-journal-upload = "Send journal messages over the network"
+DESCRIPTION:${PN}-journal-upload = "systemd-journal-upload uploads journal entries to a specified URL."
 
-SUMMARY_${PN}-journal-remote = "Receive journal messages over the network"
-DESCRIPTION_${PN}-journal-remote = "systemd-journal-remote is a command to receive serialized journal events and store them to journal files."
+SUMMARY:${PN}-journal-remote = "Receive journal messages over the network"
+DESCRIPTION:${PN}-journal-remote = "systemd-journal-remote is a command to receive serialized journal events and store them to journal files."
 
 SYSTEMD_PACKAGES = "${@bb.utils.contains('PACKAGECONFIG', 'binfmt', '${PN}-binfmt', '', d)} \
                     ${@bb.utils.contains('PACKAGECONFIG', 'microhttpd', '${PN}-journal-gatewayd', '', d)} \
                     ${@bb.utils.contains('PACKAGECONFIG', 'microhttpd', '${PN}-journal-remote', '', d)} \
                     ${@bb.utils.contains('PACKAGECONFIG', 'journal-upload', '${PN}-journal-upload', '', d)} \
 "
-SYSTEMD_SERVICE_${PN}-binfmt = "systemd-binfmt.service"
+SYSTEMD_SERVICE:${PN}-binfmt = "systemd-binfmt.service"
 
 USERADD_PACKAGES = "${PN} ${PN}-extra-utils \
                     ${@bb.utils.contains('PACKAGECONFIG', 'microhttpd', '${PN}-journal-gateway', '', d)} \
                     ${@bb.utils.contains('PACKAGECONFIG', 'microhttpd', '${PN}-journal-remote', '', d)} \
                     ${@bb.utils.contains('PACKAGECONFIG', 'journal-upload', '${PN}-journal-upload', '', d)} \
 "
-GROUPADD_PARAM_${PN} = "-r systemd-journal"
-USERADD_PARAM_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'coredump', '--system -d / -M --shell /bin/nologin systemd-coredump;', '', d)}"
-USERADD_PARAM_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'networkd', '--system -d / -M --shell /bin/nologin systemd-network;', '', d)}"
-USERADD_PARAM_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'polkit', '--system --no-create-home --user-group --home-dir ${sysconfdir}/polkit-1 polkitd;', '', d)}"
-USERADD_PARAM_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'resolved', '--system -d / -M --shell /bin/nologin systemd-resolve;', '', d)}"
-USERADD_PARAM_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', '--system -d / -M --shell /bin/nologin systemd-timesync;', '', d)}"
-USERADD_PARAM_${PN}-extra-utils = "--system -d / -M --shell /bin/nologin systemd-bus-proxy"
-USERADD_PARAM_${PN}-journal-gateway = "--system -d / -M --shell /bin/nologin systemd-journal-gateway"
-USERADD_PARAM_${PN}-journal-remote = "--system -d / -M --shell /bin/nologin systemd-journal-remote"
-USERADD_PARAM_${PN}-journal-upload = "--system -d / -M --shell /bin/nologin systemd-journal-upload"
+GROUPADD_PARAM:${PN} = "-r systemd-journal"
+USERADD_PARAM:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'coredump', '--system -d / -M --shell /bin/nologin systemd-coredump;', '', d)}"
+USERADD_PARAM:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'networkd', '--system -d / -M --shell /bin/nologin systemd-network;', '', d)}"
+USERADD_PARAM:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'polkit', '--system --no-create-home --user-group --home-dir ${sysconfdir}/polkit-1 polkitd;', '', d)}"
+USERADD_PARAM:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'resolved', '--system -d / -M --shell /bin/nologin systemd-resolve;', '', d)}"
+USERADD_PARAM:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'timesyncd', '--system -d / -M --shell /bin/nologin systemd-timesync;', '', d)}"
+USERADD_PARAM:${PN}-extra-utils = "--system -d / -M --shell /bin/nologin systemd-bus-proxy"
+USERADD_PARAM:${PN}-journal-gateway = "--system -d / -M --shell /bin/nologin systemd-journal-gateway"
+USERADD_PARAM:${PN}-journal-remote = "--system -d / -M --shell /bin/nologin systemd-journal-remote"
+USERADD_PARAM:${PN}-journal-upload = "--system -d / -M --shell /bin/nologin systemd-journal-upload"
 
-FILES_${PN}-analyze = "${bindir}/systemd-analyze"
+FILES:${PN}-analyze = "${bindir}/systemd-analyze"
 
-FILES_${PN}-initramfs = "/init"
-RDEPENDS_${PN}-initramfs = "${PN}"
+FILES:${PN}-initramfs = "/init"
+RDEPENDS:${PN}-initramfs = "${PN}"
 
-FILES_${PN}-gui = "${bindir}/systemadm"
+FILES:${PN}-gui = "${bindir}/systemadm"
 
-FILES_${PN}-vconsole-setup = "${rootlibexecdir}/systemd/systemd-vconsole-setup \
+FILES:${PN}-vconsole-setup = "${rootlibexecdir}/systemd/systemd-vconsole-setup \
                               ${systemd_unitdir}/system/systemd-vconsole-setup.service \
                               ${systemd_unitdir}/system/sysinit.target.wants/systemd-vconsole-setup.service"
 
-RDEPENDS_${PN}-kernel-install += "bash"
-FILES_${PN}-kernel-install = "${bindir}/kernel-install \
+RDEPENDS:${PN}-kernel-install += "bash"
+FILES:${PN}-kernel-install = "${bindir}/kernel-install \
                               ${sysconfdir}/kernel/ \
                               ${exec_prefix}/lib/kernel \
                              "
-FILES_${PN}-rpm-macros = "${exec_prefix}/lib/rpm \
+FILES:${PN}-rpm-macros = "${exec_prefix}/lib/rpm \
                          "
 
-FILES_${PN}-zsh-completion = "${datadir}/zsh/site-functions"
+FILES:${PN}-zsh-completion = "${datadir}/zsh/site-functions"
 
-FILES_${PN}-binfmt = "${sysconfdir}/binfmt.d/ \
+FILES:${PN}-binfmt = "${sysconfdir}/binfmt.d/ \
                       ${exec_prefix}/lib/binfmt.d \
                       ${rootlibexecdir}/systemd/systemd-binfmt \
                       ${systemd_unitdir}/system/proc-sys-fs-binfmt_misc.* \
                       ${systemd_unitdir}/system/systemd-binfmt.service"
-RRECOMMENDS_${PN}-binfmt = "kernel-module-binfmt-misc"
+RRECOMMENDS:${PN}-binfmt = "kernel-module-binfmt-misc"
 
-RRECOMMENDS_${PN}-vconsole-setup = "kbd kbd-consolefonts kbd-keymaps"
+RRECOMMENDS:${PN}-vconsole-setup = "kbd kbd-consolefonts kbd-keymaps"
 
 
-FILES_${PN}-journal-gatewayd = "${rootlibexecdir}/systemd/systemd-journal-gatewayd \
+FILES:${PN}-journal-gatewayd = "${rootlibexecdir}/systemd/systemd-journal-gatewayd \
                                 ${systemd_system_unitdir}/systemd-journal-gatewayd.service \
                                 ${systemd_system_unitdir}/systemd-journal-gatewayd.socket \
                                 ${systemd_system_unitdir}/sockets.target.wants/systemd-journal-gatewayd.socket \
                                 ${datadir}/systemd/gatewayd/browse.html \
                                "
-SYSTEMD_SERVICE_${PN}-journal-gatewayd = "systemd-journal-gatewayd.socket"
+SYSTEMD_SERVICE:${PN}-journal-gatewayd = "systemd-journal-gatewayd.socket"
 
-FILES_${PN}-journal-upload = "${rootlibexecdir}/systemd/systemd-journal-upload \
+FILES:${PN}-journal-upload = "${rootlibexecdir}/systemd/systemd-journal-upload \
                               ${systemd_system_unitdir}/systemd-journal-upload.service \
                               ${sysconfdir}/systemd/journal-upload.conf \
                              "
-SYSTEMD_SERVICE_${PN}-journal-upload = "systemd-journal-upload.service"
+SYSTEMD_SERVICE:${PN}-journal-upload = "systemd-journal-upload.service"
 
-FILES_${PN}-journal-remote = "${rootlibexecdir}/systemd/systemd-journal-remote \
+FILES:${PN}-journal-remote = "${rootlibexecdir}/systemd/systemd-journal-remote \
                               ${sysconfdir}/systemd/journal-remote.conf \
                               ${systemd_system_unitdir}/systemd-journal-remote.service \
                               ${systemd_system_unitdir}/systemd-journal-remote.socket \
                              "
-SYSTEMD_SERVICE_${PN}-journal-remote = "systemd-journal-remote.socket"
+SYSTEMD_SERVICE:${PN}-journal-remote = "systemd-journal-remote.socket"
 
 
-FILES_${PN}-container = "${sysconfdir}/dbus-1/system.d/org.freedesktop.import1.conf \
+FILES:${PN}-container = "${sysconfdir}/dbus-1/system.d/org.freedesktop.import1.conf \
                          ${sysconfdir}/dbus-1/system.d/org.freedesktop.machine1.conf \
                          ${sysconfdir}/systemd/system/multi-user.target.wants/machines.target \
                          ${base_bindir}/machinectl \
@@ -443,13 +443,13 @@ FILES_${PN}-container = "${sysconfdir}/dbus-1/system.d/org.freedesktop.import1.c
                          ${datadir}/polkit-1/actions/org.freedesktop.machine1.policy \
                         "
 
-RRECOMMENDS_${PN}-container += "\
+RRECOMMENDS:${PN}-container += "\
                          ${PN}-journal-upload \
                          ${PN}-journal-remote \
                          ${PN}-journal-gatewayd \
                         "
 
-FILES_${PN}-extra-utils = "\
+FILES:${PN}-extra-utils = "\
                         ${base_bindir}/systemd-escape \
                         ${base_bindir}/systemd-inhibit \
                         ${bindir}/systemd-detect-virt \
@@ -491,7 +491,7 @@ FILES_${PN}-extra-utils = "\
                         ${rootlibexecdir}/systemd/systemd-cgroups-agent \
 "
 
-CONFFILES_${PN} = "${sysconfdir}/systemd/coredump.conf \
+CONFFILES:${PN} = "${sysconfdir}/systemd/coredump.conf \
 	${sysconfdir}/systemd/journald.conf \
 	${sysconfdir}/systemd/logind.conf \
 	${sysconfdir}/systemd/system.conf \
@@ -500,7 +500,7 @@ CONFFILES_${PN} = "${sysconfdir}/systemd/coredump.conf \
 	${sysconfdir}/systemd/timesyncd.conf \
 "
 
-FILES_${PN} = " ${base_bindir}/* \
+FILES:${PN} = " ${base_bindir}/* \
                 ${base_sbindir}/shutdown \
                 ${base_sbindir}/halt \
                 ${base_sbindir}/poweroff \
@@ -560,13 +560,13 @@ FILES_${PN} = " ${base_bindir}/* \
                 ${datadir}/dbus-1/system.d/org.freedesktop.portable1.conf \
                "
 
-FILES_${PN}-dev += "${base_libdir}/security/*.la ${datadir}/dbus-1/interfaces/ ${sysconfdir}/rpm/macros.systemd"
+FILES:${PN}-dev += "${base_libdir}/security/*.la ${datadir}/dbus-1/interfaces/ ${sysconfdir}/rpm/macros.systemd"
 
-RDEPENDS_${PN} += "kmod dbus util-linux-mount util-linux-umount udev (= ${EXTENDPKGV}) util-linux-agetty util-linux-fsck"
-RDEPENDS_${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'serial-getty-generator', '', 'systemd-serialgetty', d)}"
-RDEPENDS_${PN} += "volatile-binds update-rc.d"
+RDEPENDS:${PN} += "kmod dbus util-linux-mount util-linux-umount udev (= ${EXTENDPKGV}) util-linux-agetty util-linux-fsck"
+RDEPENDS:${PN} += "${@bb.utils.contains('PACKAGECONFIG', 'serial-getty-generator', '', 'systemd-serialgetty', d)}"
+RDEPENDS:${PN} += "volatile-binds update-rc.d"
 
-RRECOMMENDS_${PN} += "systemd-extra-utils \
+RRECOMMENDS:${PN} += "systemd-extra-utils \
                       systemd-compat-units udev-hwdb \
                       e2fsprogs-e2fsck \
                       kernel-module-autofs4 kernel-module-unix kernel-module-ipv6 \
@@ -574,17 +574,17 @@ RRECOMMENDS_${PN} += "systemd-extra-utils \
                       systemd-conf \
 "
 
-INSANE_SKIP_${PN} += "dev-so libdir"
-INSANE_SKIP_${PN}-dbg += "libdir"
-INSANE_SKIP_${PN}-doc += " libdir"
+INSANE_SKIP:${PN} += "dev-so libdir"
+INSANE_SKIP:${PN}-dbg += "libdir"
+INSANE_SKIP:${PN}-doc += " libdir"
 
 PACKAGES =+ "udev udev-hwdb"
 
-RPROVIDES_udev = "hotplug"
+RPROVIDES:udev = "hotplug"
 
-RDEPENDS_udev-hwdb += "udev"
+RDEPENDS:udev-hwdb += "udev"
 
-FILES_udev += "${base_sbindir}/udevd \
+FILES:udev += "${base_sbindir}/udevd \
                ${rootlibexecdir}/systemd/network/99-default.link \
                ${rootlibexecdir}/systemd/systemd-udevd \
                ${rootlibexecdir}/udev/accelerometer \
@@ -610,13 +610,13 @@ FILES_udev += "${base_sbindir}/udevd \
                ${datadir}/bash-completion/completions/udevadm \
               "
 
-FILES_udev-hwdb = "${rootlibexecdir}/udev/hwdb.d"
+FILES:udev-hwdb = "${rootlibexecdir}/udev/hwdb.d"
 
-RCONFLICTS_${PN} = "tiny-init ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'resolvconf', '', d)}"
+RCONFLICTS:${PN} = "tiny-init ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'resolvconf', '', d)}"
 
 INITSCRIPT_PACKAGES = "udev"
-INITSCRIPT_NAME_udev = "systemd-udevd"
-INITSCRIPT_PARAMS_udev = "start 03 S ."
+INITSCRIPT_NAME:udev = "systemd-udevd"
+INITSCRIPT_PARAMS:udev = "start 03 S ."
 
 python __anonymous() {
     if not bb.utils.contains('DISTRO_FEATURES', 'sysvinit', True, False, d):
@@ -629,7 +629,7 @@ python do_warn_musl() {
 }
 addtask warn_musl before do_configure
 
-ALTERNATIVE_${PN} = "halt reboot shutdown poweroff runlevel ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'resolv-conf', '', d)}"
+ALTERNATIVE:${PN} = "halt reboot shutdown poweroff runlevel ${@bb.utils.contains('PACKAGECONFIG', 'resolved', 'resolv-conf', '', d)}"
 
 ALTERNATIVE_TARGET[resolv-conf] = "${sysconfdir}/resolv-conf.systemd"
 ALTERNATIVE_LINK_NAME[resolv-conf] = "${sysconfdir}/resolv.conf"
@@ -655,20 +655,20 @@ ALTERNATIVE_TARGET[runlevel] = "${base_bindir}/systemctl"
 ALTERNATIVE_LINK_NAME[runlevel] = "${base_sbindir}/runlevel"
 ALTERNATIVE_PRIORITY[runlevel] ?= "300"
 
-pkg_postinst_${PN}_libc-glibc () {
+pkg_postinst:${PN}:libc-glibc () {
 	sed -e '/^hosts:/s/\s*\<myhostname\>//' \
 		-e 's/\(^hosts:.*\)\(\<files\>\)\(.*\)\(\<dns\>\)\(.*\)/\1\2 myhostname \3\4\5/' \
 		-i $D${sysconfdir}/nsswitch.conf
 }
 
-pkg_prerm_${PN}_libc-glibc () {
+pkg_prerm:${PN}:libc-glibc () {
 	sed -e '/^hosts:/s/\s*\<myhostname\>//' \
 		-e '/^hosts:/s/\s*myhostname//' \
 		-i $D${sysconfdir}/nsswitch.conf
 }
 
 PACKAGE_WRITE_DEPS += "qemu-native"
-pkg_postinst_udev-hwdb () {
+pkg_postinst:udev-hwdb () {
 	if test -n "$D"; then
 		$INTERCEPT_DIR/postinst_intercept update_udev_hwdb ${PKG} mlprefix=${MLPREFIX} binprefix=${MLPREFIX}
 	else
@@ -676,6 +676,6 @@ pkg_postinst_udev-hwdb () {
 	fi
 }
 
-pkg_prerm_udev-hwdb () {
+pkg_prerm:udev-hwdb () {
 	rm -f $D${sysconfdir}/udev/hwdb.bin
 }

@@ -32,4 +32,4 @@ do_install() {
     install -o root -g root -m 0755 ${WORKDIR}/br0-mac-generator ${D}/lib/systemd/system-generators/
 }
 
-FILES_${PN} = "/"
+FILES:${PN} = "/"

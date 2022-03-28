@@ -17,9 +17,9 @@ DEPENDS = "systemd"
 
 inherit autotools pkgconfig systemd
 
-SYSTEMD_SERVICE_${PN} = "${BPN}.service"
+SYSTEMD_SERVICE:${PN} = "${BPN}.service"
 
-do_install_append() {
+do_install:append() {
     install -m 0755 -d ${D}${sysconfdir}/default
     install -m 0644 ${WORKDIR}/mini-snmpd ${D}${sysconfdir}/default/mini-snmpd
     install -m 0755 -d ${D}${sbindir}/

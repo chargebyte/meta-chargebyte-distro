@@ -21,7 +21,7 @@ do_install() {
 }
 
 # Based on change from YP bug 8141, OE commit 5196d7bacaef1076c361adaa2867be31759c1b52
-do_install_append_qemuall() {
+do_install:append:qemuall() {
 	install -D -m0644 ${WORKDIR}/system.conf-qemuall ${D}${systemd_unitdir}/system.conf.d/01-${PN}.conf
 
 	# Do not install wired.network for qemu bsps
@@ -30,7 +30,7 @@ do_install_append_qemuall() {
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
-FILES_${PN} = "\
+FILES:${PN} = "\
     ${systemd_unitdir}/journald.conf.d/ \
     ${systemd_unitdir}/logind.conf.d/ \
     ${systemd_unitdir}/system.conf.d/ \
