@@ -16,6 +16,9 @@ RDEPENDS:${PN} = " \
     iptraf \
     iputils-ping \
     ldd \
+    libiio \
+    libiio-iiod \
+    libiio-python3 \
     lmsensors-pwmconfig \
     mc \
     memtester \
