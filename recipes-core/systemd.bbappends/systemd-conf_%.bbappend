@@ -1,3 +1,4 @@
+FILESEXTRAPATHS_prepend := "${THISDIR}/${PN}:"
 
 do_install:append() {
     # do not pre-install wired.network or wifi stuff for our boards
