@@ -44,7 +44,7 @@ index 000000000..07011643b
 +
 +Name: mbedtls
 +Description: mbed TLS open source SSL libary
-+Version: 2.26.0
++Version: 2.28.0
 +Cflags: -I${includedir}
 +Libs: -L${libdir} -lmbedtls -lmbedx509 -lmbedcrypto
 diff --git a/scripts/bump_version.sh b/scripts/bump_version.sh
