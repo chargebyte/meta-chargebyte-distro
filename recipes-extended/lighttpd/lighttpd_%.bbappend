@@ -2,7 +2,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += "file://lighttpd.conf file://10-mime-types.conf file://20-mqtt.conf file://lighttpd.service file://lighttpd.logrotate"
 
-PACKAGECONFIG[lua] = "--with-lua,--without-lua,lua"
 PACKAGECONFIG:append = " lua"
 
 do_install:append() {
@@ -22,6 +21,8 @@ do_install:append() {
 
     install -d "${D}${sysconfdir}/logrotate.d"
     install -m 644 ${WORKDIR}/lighttpd.logrotate ${D}${sysconfdir}/logrotate.d/lighttpd
+
+    rm -rf "${D}/var"
 }
 
 FILES:${PN} += " ${sysconfdir}/lighttpd.d ${sysconfdir}/logrotate.d"
