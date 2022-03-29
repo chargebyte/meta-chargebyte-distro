@@ -23,8 +23,8 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 SECTION = "libs"
 
 S = "${WORKDIR}/git"
-SRCREV = "c8f5b0f2407b93ea96ee8a19df2da33ba49a53f6"
-SRC_URI = "git://github.com/I2SE/mbedtls.git;protocol=https;branch=mbedtls-2.26.0-trustedCAKey"
+SRCREV = "e089f6f2d06091def48ff610b099efb1c1a1aaca"
+SRC_URI = "git://github.com/I2SE/mbedtls.git;protocol=https;branch=mbedtls-2.28.0-trustedCAKey"
 SRC_URI += "file://0001-ssl_tls-Increase-size-of-padbuf-to-64.patch \
             file://0001-Add-pkg-config-file.patch \
             file://0001-Fix-printf-format-issue-in-programs.patch \
