@@ -19,6 +19,7 @@ RDEPENDS:${PN} = " \
     libiio \
     libiio-iiod \
     libiio-python3 \
+    libiio-tests \
     lmsensors-pwmconfig \
     mc \
     memtester \
