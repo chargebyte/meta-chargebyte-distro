@@ -1,6 +1,6 @@
 SUMMARY = "A tina SNMP server for embedded systems"
 HOMEPAGE = "https://github.com/troglobit/mini-snmpd"
-LICENSE = "GPL-2.0"
+LICENSE = "GPL-2.0-only"
 LIC_FILES_CHKSUM = "file://COPYING;md5=8f41487e236b91bf454621d635c4a28f"
 
 SRC_URI = "https://github.com/troglobit/mini-snmpd/releases/download/v${PV}/${BPN}-${PV}.tar.gz"
