@@ -1,2 +1,2 @@
 # disable python
-PACKAGECONFIG ?= "locale"
+PACKAGECONFIG:remove = "python"
