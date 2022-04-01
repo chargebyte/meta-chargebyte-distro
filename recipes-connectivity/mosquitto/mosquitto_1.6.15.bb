@@ -16,10 +16,9 @@ SRC_URI = "http://mosquitto.org/files/source/mosquitto-${PV}.tar.gz \
            file://mosquitto.service \
            file://mosquitto.logrotate \
 "
-PR = "r1"
 
-SRC_URI[md5sum] = "cdb4d2776e498d7a83b37921f9877e08"
-SRC_URI[sha256sum] = "d4024c3388502d50be4192991e90d66dfb344376104df3f63846c9f201779955"
+SRC_URI[md5sum] = "792bdd8fce3a8a1db102988ef6a9a02f"
+SRC_URI[sha256sum] = "5ff2271512f745bf1a451072cd3768a5daed71e90c5179fae12b049d6c02aa0f"
 
 inherit systemd update-rc.d useradd
 
@@ -89,6 +88,7 @@ FILES:libmosquittopp1 = "${libdir}/libmosquittopp.so.1"
 
 FILES:${PN}-clients = "${bindir}/mosquitto_pub \
                        ${bindir}/mosquitto_sub \
+                       ${bindir}/mosquitto_rr \
 "
 
 FILES:${PN}-examples = "${sysconfdir}/mosquitto/*.example"
