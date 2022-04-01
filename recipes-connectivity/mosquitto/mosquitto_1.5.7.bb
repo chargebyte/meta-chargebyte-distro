@@ -48,9 +48,9 @@ export LIB_SUFFIX = "${@d.getVar('baselib', True).replace('lib', '')}"
 do_install() {
     oe_runmake 'DESTDIR=${D}' install
 
-    install -d ${D}${systemd_unitdir}/system/
-#    install -m 0644 ${S}/service/systemd/mosquitto.service.notify ${D}${systemd_unitdir}/system/mosquitto.service
-    install -m 0644 ${WORKDIR}/mosquitto.service ${D}${systemd_unitdir}/system/mosquitto.service
+    install -d ${D}${systemd_system_unitdir}/
+#    install -m 0644 ${S}/service/systemd/mosquitto.service.notify ${D}${systemd_system_unitdir}/mosquitto.service
+    install -m 0644 ${WORKDIR}/mosquitto.service ${D}${systemd_system_unitdir}/mosquitto.service
 
     install -d ${D}${sysconfdir}/mosquitto
 #    install -m 0644 ${D}${sysconfdir}/mosquitto/mosquitto.conf.example \
@@ -78,7 +78,7 @@ FILES:${PN} = "${sbindir}/mosquitto \
                ${sysconfdir}/mosquitto \
                ${sysconfdir}/init.d \
                ${sysconfdir}/logrotate.d \
-               ${systemd_unitdir}/system/mosquitto.service \
+               ${systemd_system_unitdir}/mosquitto.service \
 "
 
 CONFFILES:${PN} += "${sysconfdir}/mosquitto/mosquitto.conf"
