@@ -1,3 +1,8 @@
+FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
+SRC_URI += " \
+    file://0001-cgroup-downgrade-warning-if-we-can-t-get-ID-off-cgro.patch \
+"
 
 PACKAGECONFIG:remove = " acl backlight binfmt hibernate ima machined polkit smack vconsole nss-mymachines utmp"
 
