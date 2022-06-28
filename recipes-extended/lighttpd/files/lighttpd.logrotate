@@ -7,6 +7,6 @@
 	notifempty
 	sharedscripts
 	postrotate
-		systemctl kill -s HUP lighttpd.service > /dev/null
+		systemctl kill -s USR1 lighttpd.service > /dev/null
 	endscript
 }
