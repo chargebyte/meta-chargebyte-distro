@@ -1,5 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+PACKAGECONFIG:remove = "dlt"
+
 SRC_URI += "file://mosquitto.conf \
             file://mosquitto.logrotate \
 "
