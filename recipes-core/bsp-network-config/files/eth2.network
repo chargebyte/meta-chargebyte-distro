@@ -6,7 +6,6 @@ Driver=qcaspi
 RequiredForOnline=no
 
 [Network]
-IPMasquerade=yes
 DHCP=yes
 
 [DHCPv4]
