@@ -2,6 +2,8 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " file://fancontrol.service"
 
+PACKAGECONFIG ?= ""
+
 SYSTEMD_PACKAGES += "${PN}-fancontrol"
 SYSTEMD_SERVICE:${PN}-fancontrol = "fancontrol.service"
 SYSTEMD_AUTO_ENABLE = "enable"

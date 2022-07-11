@@ -1,1 +1,3 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
+
+PACKAGECONFIG ?= ""
