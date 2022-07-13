@@ -30,6 +30,4 @@ do_install:append() {
 
 FILES:${PN} += " /usr/lib/rauc"
 
-DEPENDS += "customerfs"
-
 PACKAGECONFIG ??= "service network json nocreate"

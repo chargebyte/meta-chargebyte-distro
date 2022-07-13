@@ -15,10 +15,14 @@ deltask do_package_qa
 deltask do_package_write_deb
 do_install[nostamp] = "1"
 
-
 do_install() {
-	tar -czvf customerfs.tar.gz --files-from /dev/null
-	cp -a --no-preserve=ownership ${WORKDIR}/${BPN}-${PV}/customerfs.tar.gz ${DEPLOY_DIR_IMAGE}
+    tar -czvf customerfs.tar.gz --files-from /dev/null
+}
+
+addtask do_deploy after do_install
+
+do_deploy() {
+    cp -a --no-preserve=ownership ${WORKDIR}/${BPN}-${PV}/customerfs.tar.gz ${DEPLOY_DIR_IMAGE}
 }
 
 do_clean:append() {
