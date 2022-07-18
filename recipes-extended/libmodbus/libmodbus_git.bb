@@ -10,7 +10,7 @@ LIC_FILES_CHKSUM = "file://COPYING.LESSER;md5=4fbd65380cdd255951079008b364516c"
 
 inherit autotools pkgconfig
 
-SRC_URI = "git://github.com/I2SE/libmodbus.git;protocol=https;branch=i2se-master"
+SRC_URI = "git://github.com/chargebyte/libmodbus.git;protocol=https;branch=i2se-master"
 
 SRCREV = "6aeadb14324002d28b3df9d01242cd416058e614"
 
