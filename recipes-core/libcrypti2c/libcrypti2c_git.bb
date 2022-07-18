@@ -7,7 +7,7 @@ inherit autotools pkgconfig
 
 RDEPENDS:${PN} += "libgcrypt libgpg-error libxml2"
 
-SRC_URI = "git://github.com/I2SE/libcrypti2c.git;protocol=https;branch=improvements"
+SRC_URI = "git://github.com/chargebyte/libcrypti2c.git;protocol=https;branch=improvements"
 
 SRCREV = "2539088ac985faafb6a0585dba348cbfa4645c08"
 
