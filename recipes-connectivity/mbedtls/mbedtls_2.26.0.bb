@@ -24,7 +24,7 @@ SECTION = "libs"
 
 S = "${WORKDIR}/git"
 SRCREV = "c8f5b0f2407b93ea96ee8a19df2da33ba49a53f6"
-SRC_URI = "git://github.com/I2SE/mbedtls.git;protocol=https;branch=mbedtls-2.26.0-trustedCAKey"
+SRC_URI = "git://github.com/chargebyte/mbedtls.git;protocol=https;branch=mbedtls-2.26.0-trustedCAKey"
 SRC_URI += "file://0001-ssl_tls-Increase-size-of-padbuf-to-64.patch \
             file://0001-Add-pkg-config-file.patch \
             file://0001-Fix-printf-format-issue-in-programs.patch \

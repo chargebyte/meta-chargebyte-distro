@@ -1,4 +1,4 @@
-DEVICE_MANUFACTURER='in-tech smart charging GmbH'
-DEVICE_MANUFACTURER_URL='https://www.in-tech-smartcharging.com/'
+DEVICE_MANUFACTURER='chargebyte GmbH'
+DEVICE_MANUFACTURER_URL='https://www.chargebyte.com/'
 DEVICE_PRODUCT='EVAcharge SE'
 DEVICE_REVISION=''
