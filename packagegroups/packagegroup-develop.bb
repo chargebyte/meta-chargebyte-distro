@@ -10,6 +10,7 @@ RDEPENDS_${PN} = " \
     can-utils-essentials \
     cmake \
     ${@bb.utils.contains("TUNE_FEATURES", "cortexa7", "cpuburn-a7", "", d)} \
+    fio \
     fping \
     git \
     iperf2 \
