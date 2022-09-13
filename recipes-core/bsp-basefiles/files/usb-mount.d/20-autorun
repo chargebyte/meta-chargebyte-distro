@@ -1,0 +1,43 @@
+#!/bin/sh
+
+ACTION="$1"
+MOUNTPOINT="$2"
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+if [ "$ACTION" = "add" ]; then
+	# look for specific files: autorun.sh and autorun.sh.p7s
+	if [ -f "$MOUNTPOINT/autorun.sh" ] && [ -f "$MOUNTPOINT/autorun.sh.p7s" ]; then
+		echo "Found autorun.sh on $MOUNTPOINT, checking..." | logger -t usb-autorun
+
+		# check whether signature can be verified with our current installed keyring
+		if openssl smime -verify -no_check_time -inform DER \
+		           -CAfile /etc/rauc/keyring.pem \
+		           -content "$MOUNTPOINT/autorun.sh" \
+		           -in "$MOUNTPOINT/autorun.sh.p7s" > /dev/null; then
+
+			# generate md5sum to check whether script was already invoked
+			HASH="$(md5sum "$MOUNTPOINT/autorun.sh" | cut -f1 -d' ')"
+
+			# create directory and ensure that file exists so that grep can operate on it
+			mkdir -p /var/cache/usb-autorun
+			touch /var/cache/usb-autorun/executed.list
+
+			if grep -q "$HASH" /var/cache/usb-autorun/executed.list; then
+				echo "...already invoked, ignored." | logger -t usb-autorun
+				exit 0
+			fi
+
+			echo "...executing..." | logger -t usb-autorun
+			echo "$HASH" >> /var/cache/usb-autorun/executed.list
+
+			# execute in a subshell
+			(
+				cd "$MOUNTPOINT"
+				sh "autorun.sh"
+			)
+		else
+			echo "...invalid, ignored." | logger -t usb-autorun
+		fi
+	fi
+fi

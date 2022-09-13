@@ -1,0 +1,43 @@
+#!/bin/sh
+
+ACTION="$1"
+MOUNTPOINT="$2"
+
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+if [ "$ACTION" = "add" ]; then
+	# look for specific files: fwupdate-keyring.pem and fwupdate-keyring.pem.p7s
+	if [ -f "$MOUNTPOINT/fwupdate-keyring.pem" ] && [ -f "$MOUNTPOINT/fwupdate-keyring.pem.p7s" ]; then
+		echo "Found fwupdate-keyring.pem on $MOUNTPOINT, checking..." | logger -t usb-fwupdate-keyring
+
+		# check whether it is really a certificate
+		if ! openssl x509 -in "$MOUNTPOINT/fwupdate-keyring.pem" -noout 2> /dev/null; then
+			echo "...does not look like a X.509 certificate, ignored." | logger -t usb-fwupdate-keyring
+			exit 0
+		fi
+
+		# check whether signature can be verified with our current installed keyring
+		if openssl smime -verify -no_check_time -inform DER \
+		           -CAfile /etc/rauc/keyring.pem \
+		           -content "$MOUNTPOINT/fwupdate-keyring.pem" \
+		           -in "$MOUNTPOINT/fwupdate-keyring.pem.p7s" > /dev/null; then
+			echo "...installing..." | logger -t usb-fwupdate-keyring
+
+			# remove possible existing symlink
+			rm -f /etc/rauc/keyring.pem
+
+			# create new file with sane permissions (i.e. we don't use cp to
+			# not copy permissions from usb filesystem)
+			cat "$MOUNTPOINT/fwupdate-keyring.pem" > /etc/rauc/keyring.pem
+
+			# double-check that it not failed due to (e.g. file system ro or no space...
+			if [ -f /etc/rauc/keyring.pem ]; then
+				echo "...successfully installed." | logger -t usb-fwupdate-keyring
+			else
+				echo "...installation failed." | logger -t usb-fwupdate-keyring
+			fi
+		else
+			echo "...invalid, ignored." | logger -t usb-fwupdate-keyring
+		fi
+	fi
+fi
