@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit systemd
 
-PV = "1.15"
+PV = "1.16"
 
 PACKAGE_ARCH = "all"
 
