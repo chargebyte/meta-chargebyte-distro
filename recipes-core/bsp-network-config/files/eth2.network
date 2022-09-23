@@ -8,6 +8,9 @@ RequiredForOnline=no
 [Network]
 DHCP=yes
 
+[IPv6AcceptRA]
+RouteMetric=2048
+
 [DHCPv4]
 ClientIdentifier=mac
 RouteMetric=2048
