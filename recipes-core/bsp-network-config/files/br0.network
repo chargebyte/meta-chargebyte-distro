@@ -10,6 +10,10 @@ IPv6AcceptRA=yes
 
 [DHCPv4]
 ClientIdentifier=mac
+UseHostname=no
+
+[DHCPv6]
+UseHostname=no
 
 [Address]
 Label=br0:fallback

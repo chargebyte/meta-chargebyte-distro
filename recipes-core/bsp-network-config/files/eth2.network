@@ -13,7 +13,9 @@ RouteMetric=2048
 
 [DHCPv4]
 ClientIdentifier=mac
+UseHostname=no
 RouteMetric=2048
 
 [DHCPv6]
+UseHostname=no
 RouteMetric=2048
