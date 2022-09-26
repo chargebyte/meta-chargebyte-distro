@@ -16,7 +16,6 @@ do_install:append() {
     install -m 644 ${WORKDIR}/20-mqtt.conf ${D}${sysconfdir}/lighttpd/20-mqtt.conf
 
     # directories as specified in our lighttpd.conf, with our user permissions
-    install -d -m 0750 -o www-data -g www-data ${D}/${localstatedir}/log/lighttpd
     install -d -m 0755 -o root     -g root     ${D}/${localstatedir}/cache/lighttpd
     install -d -m 0750 -o www-data -g www-data ${D}/${localstatedir}/cache/lighttpd/uploads
     install -d -m 0750 -o www-data -g www-data ${D}/${localstatedir}/cache/lighttpd/compress
