@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit systemd
 
-PV = "1.16"
+PV = "1.17"
 
 PACKAGE_ARCH = "all"
 
@@ -96,4 +96,5 @@ RDEPENDS:${PN} += " \
     mmc-utils \
     ${@bb.utils.contains('MACHINE', 'evachargese', 'sdimage', '', d)} \
     debianutils-run-parts \
+    openssl-bin \
 "
