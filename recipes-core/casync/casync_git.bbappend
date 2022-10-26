@@ -1,6 +1,5 @@
-SRCREV = "bd8898ed92685e12022dd33a04c87786b5262344"
+# casync is usually not interactively used,
+# so let's move bash completion stuff to developer build
 
-do_install:append() {
-	# remove unnecessary stuff
-	rm -rf ${D}/usr/share
-}
+FILES:${PN}:remove = "${datadir}/bash-completion"
+FILES:${PN}-dev += "${datadir}/bash-completion"
