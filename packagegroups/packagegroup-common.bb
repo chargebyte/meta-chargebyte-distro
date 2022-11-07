@@ -14,6 +14,7 @@ RDEPENDS:${PN} = " \
     openssh-sftp-server \
     ethtool \
     iproute2 \
+    ${@bb.utils.contains("EXTRA_IMAGE_FEATURES", "debug-tweaks", "", "less", d)} \
     ${@bb.utils.contains("SUBMACHINE", "micro", "", "open-plc-utils", d)} \
     u-boot-fw-utils \
     util-linux-lsblk \
