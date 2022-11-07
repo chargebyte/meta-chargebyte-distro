@@ -6,11 +6,13 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 RDEPENDS:${PN} = " \
+    bison \
     can-utils \
     can-utils-essentials \
     cmake \
     ${@bb.utils.contains("TUNE_FEATURES", "cortexa7", "cpuburn-arm", "", d)} \
     fio \
+    flex \
     fping \
     git \
     iperf2 \
