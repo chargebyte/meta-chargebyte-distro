@@ -1,0 +1,12 @@
+[Unit]
+Description=Install Customer Root CA certificates
+Before=network-pre.target
+ConditionPathExists=!/var/lib/update-ca-certificates.run
+
+[Service]
+Type=oneshot
+ExecStart=@SBINDIR@/update-ca-certificates
+ExecStartPost=/bin/touch /var/lib/update-ca-certificates.run
+
+[Install]
+WantedBy=multi-user.target
