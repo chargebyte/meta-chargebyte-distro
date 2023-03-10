@@ -9,7 +9,7 @@ SYSTEMD_SERVICE:${PN}-fancontrol = "fancontrol.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
-    # Insall sensord service script
+    # install systemd service file
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -m 0644 ${WORKDIR}/fancontrol.service ${D}${systemd_system_unitdir}
     fi
