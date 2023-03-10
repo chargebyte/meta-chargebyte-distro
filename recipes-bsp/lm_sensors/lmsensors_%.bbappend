@@ -1,6 +1,10 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += " file://fancontrol.service"
+SRC_URI += " \
+    file://fancontrol.service \
+    file://fancontrol.patch \
+    file://pwmconfig.patch \
+"
 
 PACKAGECONFIG ?= ""
 
