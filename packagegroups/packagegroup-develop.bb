@@ -6,6 +6,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 RDEPENDS:${PN} = " \
+    autoconf-archive \
     bison \
     can-utils \
     can-utils-essentials \
