@@ -1,0 +1,13 @@
+[Unit]
+Description=PWM Fan Configuration
+ConditionFileNotEmpty=/etc/fancontrol
+ConditionPathExists=/sys/class/hwmon/hwmon0/pwm1_enable
+Before=fancontrol.service
+Wants=fancontrol.service
+
+[Service]
+Type=simple
+ExecStart=/bin/sh -c 'echo 3 > /sys/class/hwmon/hwmon0/pwm1_enable'
+
+[Install]
+WantedBy=multi-user.target

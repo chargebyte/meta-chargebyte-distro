@@ -1,0 +1,29 @@
+--- /prog/pwm/fancontrol.orig
++++ /prog/pwm/fancontrol
+@@ -398,9 +398,12 @@
+ function pwmdisable()
+ {
+ 	local ENABLE=${1}_enable
++	local NAME="$(dirname ${1})/name"
++	local DRVNAME="$(cat $NAME)"
+ 
+-	# No enable file? Just set to max
+-	if [ ! -f $ENABLE ]
++	# No enable file? Just set to max;
++	# pwmfan driver implements enable file, but with different purpose
++	if [ ! -f $ENABLE ] || [ "$DRVNAME" = "pwmfan" ]
+ 	then
+ 		echo $MAX > $1
+ 		return 0
+@@ -469,8 +472,10 @@
+ function pwmenable()
+ {
+ 	local ENABLE=${1}_enable
++	local NAME="$(dirname ${1})/name"
++	local DRVNAME="$(cat $NAME)"
+ 
+-	if [ -f $ENABLE ]
++	if [ -f $ENABLE ] && [ "$DRVNAME" != "pwmfan" ]
+ 	then
+ 		# save the original pwmN_control state, e.g. 1 for manual or 2 for auto,
+ 		# and the value from pwmN
