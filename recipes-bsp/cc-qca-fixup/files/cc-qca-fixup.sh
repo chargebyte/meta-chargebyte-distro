@@ -85,7 +85,7 @@ mx6ull_mac_from_otp() {
 
 determine_qca_reset_gpio() {
     case "$PLATFORM" in
-    "I2SE EVAcharge SE")
+    *"EVAcharge SE")
         QCA_INTERFACE_MAC="$(mx28_mac_from_otp "$I2SE_OUI" 1)"
 
         # compare MACs and quit if they do not match
@@ -94,7 +94,7 @@ determine_qca_reset_gpio() {
         QCA_RESET_GPIO=45
         ;;
 
-    "I2SE Tarragon"*)
+    *Tarragon*)
         for QCA_TARGET in "control-pilot" "mains"; do
             QCA_INTERFACE_MAC="$(mx6ull_mac_from_otp "$I2SE_OUI" qca-$QCA_TARGET)"
 
