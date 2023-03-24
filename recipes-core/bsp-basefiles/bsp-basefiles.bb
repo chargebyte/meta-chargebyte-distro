@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit systemd
 
-PV = "1.17"
+PV = "1.18"
 
 PACKAGE_ARCH = "all"
 
@@ -24,6 +24,7 @@ SRC_URI = " \
     file://rauc-helper.sh \
     file://mount-other-rootfs \
     file://led-boot-notification.service \
+    file://led-boot-notification.sh \
 "
 
 do_install() {
@@ -46,6 +47,9 @@ do_install() {
     install -d ${D}/lib
     install -o root -g root -m 0644 ${WORKDIR}/led.sh ${D}/lib/
     install -o root -g root -m 0644 ${WORKDIR}/rauc-helper.sh ${D}/lib/
+
+    install -d ${D}/usr/libexec
+    install -o root -g root -m 0755 ${WORKDIR}/led-boot-notification.sh ${D}/usr/libexec
 
     install -d ${D}/lib/init
     install -d ${D}/etc/rc.once.d

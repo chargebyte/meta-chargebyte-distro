@@ -8,7 +8,7 @@ Requires=watchdogd.service
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c 'echo none > /sys/class/leds/evse:green:led1/trigger && echo 200 > /sys/class/leds/evse:green:led1/brightness'
+ExecStart=/usr/libexec/led-boot-notification.sh
 SyslogFacility=local0
 
 [Install]
