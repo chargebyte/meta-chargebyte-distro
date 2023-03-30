@@ -116,10 +116,10 @@ mx6ull_mac_from_otp_nvmem() {
 }
 
 mx6ull_mac_from_otp() {
-    if [ -d /sys/fsl_otp ]; then
-        mx6ull_mac_from_otp_fslotp "$1" "$2"
-    else
+    if [ -f /sys/bus/nvmem/devices/imx-ocotp0/nvmem ]; then
         mx6ull_mac_from_otp_nvmem "$1" "$2"
+    else
+        mx6ull_mac_from_otp_fslotp "$1" "$2"
     fi
 }
 
