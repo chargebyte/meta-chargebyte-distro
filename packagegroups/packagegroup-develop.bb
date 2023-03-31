@@ -20,6 +20,7 @@ RDEPENDS:${PN} = " \
     iptraf \
     iputils-ping \
     ldd \
+    libgpiod-tools \
     libiio \
     libiio-iiod \
     libiio-python3 \

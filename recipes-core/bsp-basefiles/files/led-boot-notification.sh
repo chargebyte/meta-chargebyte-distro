@@ -1,25 +1,22 @@
 #!/bin/sh
 
-ACTION="$1"
-MOUNTPOINT="$2"
-
-[ "$ACTION" = "add" ] || exit 0
+. /lib/led.sh
 
 MODEL=$(tr -d '\0' < /proc/device-tree/model)
 
 case "$MODEL" in
 "I2SE EVAcharge SE")
-	LED="evse:yellow:led1"
+	LED="evse:green:led3"
 	;;
 "chargebyte Tarragon"*)
-	LED="yellow:programming"
+	LED="green:boot"
 	;;
 "I2SE Tarragon"*)
-	LED="evse:yellow:led2"
+	LED="evse:green:led1"
 	;;
 *)
 	exit 0
 esac
 
-. /lib/led.sh
-led_on "$LED"
+led_set_attr "$LED" "trigger" "none"
+led_set_attr "$LED" "brightness" 200

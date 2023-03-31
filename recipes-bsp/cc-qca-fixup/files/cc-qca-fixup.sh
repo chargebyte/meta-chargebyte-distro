@@ -56,7 +56,7 @@ mx28_mac_from_otp() {
     printf "$oui:%02x:%02x:%02x\n" $(((addr >> 16) & 0xff)) $(((addr >> 8) & 0xff)) $((addr & 0xff))
 }
 
-mx6ull_mac_from_otp() {
+mx6ull_mac_from_otp_fslotp() {
     local oui="$1"
     local mac_name="$2"
     local otp_reg
@@ -83,9 +83,49 @@ mx6ull_mac_from_otp() {
     printf "$oui:%02x:%02x:%02x\n" $(((addr >> 16) & 0xff)) $(((addr >> 8) & 0xff)) $((addr & 0xff))
 }
 
+mx6ull_nvmem_4bytes_from_offset() {
+    local offset="$1"
+    local nvmem="/sys/bus/nvmem/devices/imx-ocotp0/nvmem"
+
+    dd if="$nvmem" bs=4 count=1 skip="$offset" 2> /dev/null | busybox hexdump -e ' "0x" "%04x" '
+}
+
+mx6ull_mac_from_otp_nvmem() {
+    local oui="$1"
+    local mac_name="$2"
+    local addr
+
+    case "$mac_name" in
+    wired)
+        local addr2="$(mx6ull_nvmem_4bytes_from_offset 34)"
+        local addr1="$(mx6ull_nvmem_4bytes_from_offset 35)"
+
+        printf "%02x:%02x:%02x:%02x:%02x:%02x\n" $(((addr1 >> 8) & 0xff)) $((addr1 & 0xff)) $(((addr2 >> 24) & 0xff)) $(((addr2 >> 16) & 0xff)) $(((addr2 >> 8) & 0xff)) $((addr2 & 0xff))
+        return 0
+        ;;
+
+    qca-mains)            addr="$(mx6ull_nvmem_4bytes_from_offset 38)" ;;
+    qca-control-pilot)    addr="$(mx6ull_nvmem_4bytes_from_offset 39)" ;;
+    qca-fw-mains)         addr="$(mx6ull_nvmem_4bytes_from_offset 41)" ;;
+    qca-fw-control-pilot) addr="$(mx6ull_nvmem_4bytes_from_offset 42)" ;;
+    *)
+        return 1
+    esac
+
+    printf "$oui:%02x:%02x:%02x\n" $(((addr >> 16) & 0xff)) $(((addr >> 8) & 0xff)) $((addr & 0xff))
+}
+
+mx6ull_mac_from_otp() {
+    if [ -f /sys/bus/nvmem/devices/imx-ocotp0/nvmem ]; then
+        mx6ull_mac_from_otp_nvmem "$1" "$2"
+    else
+        mx6ull_mac_from_otp_fslotp "$1" "$2"
+    fi
+}
+
 determine_qca_reset_gpio() {
     case "$PLATFORM" in
-    "I2SE EVAcharge SE")
+    *"EVAcharge SE")
         QCA_INTERFACE_MAC="$(mx28_mac_from_otp "$I2SE_OUI" 1)"
 
         # compare MACs and quit if they do not match
@@ -94,7 +134,7 @@ determine_qca_reset_gpio() {
         QCA_RESET_GPIO=45
         ;;
 
-    "I2SE Tarragon"*)
+    *Tarragon*)
         for QCA_TARGET in "control-pilot" "mains"; do
             QCA_INTERFACE_MAC="$(mx6ull_mac_from_otp "$I2SE_OUI" qca-$QCA_TARGET)"
 
