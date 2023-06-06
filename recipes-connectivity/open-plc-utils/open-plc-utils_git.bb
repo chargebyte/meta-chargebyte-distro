@@ -3,7 +3,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=7d83a9e9a9788beb9357262af385f6c7"
 
 SRC_URI = "git://github.com/qca/open-plc-utils.git;protocol=https;branch=master"
 
-SRCREV = "358dfcf78bdaf7b0b13dcdf91cb1aae1789f2770"
+SRCREV = "1ba7d5a042e4e8ff6858b08e113eec5dc4e89cf2"
 PV = "0.0.6+git${SRCPV}"
 S = "${WORKDIR}/git"
 
@@ -21,7 +21,7 @@ do_compile() {
 do_install() {
     make install ROOTFS=${D} BIN=${D}/usr/bin MAN=${D}/usr/share/man/man1
 
-    # yeah, a whitelist maybe a whitelist would be better...
+    # yeah, some kind of "allow list" might be better...
     rm -f ${D}/usr/bin/CMEncrypt
     rm -f ${D}/usr/bin/amp*
     rm -f ${D}/usr/bin/config2cfg
