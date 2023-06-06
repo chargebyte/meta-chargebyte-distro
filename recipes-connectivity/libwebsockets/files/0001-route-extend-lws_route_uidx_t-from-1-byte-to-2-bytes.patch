@@ -1,0 +1,40 @@
+From 73b61f6a2ebeb02f1fb81f27dde3b55944398026 Mon Sep 17 00:00:00 2001
+From: wayneonway <121931005@qq.com>
+Date: Mon, 21 Feb 2022 15:16:35 +0800
+Subject: [PATCH] route: extend lws_route_uidx_t from 1 byte to 2 bytes
+
+---
+ include/libwebsockets/lws-network-helper.h | 3 ++-
+ lib/core-net/route.c                       | 2 +-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/include/libwebsockets/lws-network-helper.h b/include/libwebsockets/lws-network-helper.h
+index 20a32253..09308b8b 100644
+--- a/include/libwebsockets/lws-network-helper.h
++++ b/include/libwebsockets/lws-network-helper.h
+@@ -33,7 +33,8 @@
+ #include <lwip/sockets.h>
+ #endif
+ 
+-typedef uint8_t lws_route_uidx_t;
++/* cope with large amounts of route information */
++typedef uint16_t lws_route_uidx_t;
+ 
+ typedef struct lws_dns_score {
+ 	uint8_t precedence;
+diff --git a/lib/core-net/route.c b/lib/core-net/route.c
+index 7013ef84..14f4beb0 100644
+--- a/lib/core-net/route.c
++++ b/lib/core-net/route.c
+@@ -103,7 +103,7 @@ _lws_routing_table_dump(struct lws_context *cx)
+ lws_route_uidx_t
+ _lws_route_get_uidx(struct lws_context *cx)
+ {
+-	uint8_t ou;
++	lws_route_uidx_t ou;
+ 
+ 	if (!cx->route_uidx)
+ 		cx->route_uidx++;
+-- 
+2.34.1
+
