@@ -7,15 +7,23 @@ LIC_FILES_CHKSUM = " \
     file://LICENSES/CC-BY-SA-4.0.txt;md5=fba3b94d88bfb9b81369b869a1e9a20f \
 "
 
-SRC_URI[sha256sum] = "f74cbf82038b3cb98ebeb25bce55ee2553be28194002d2a9889b9268cce2dd07"
+FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}-2.x:"
 
-S = "${WORKDIR}/libgpiod-2.0"
+SRC_URI += "file://gpio-tools-test-bats-modify.patch"
 
-# We must enable gpioset-interactive for all gpio-tools tests to pass
-PACKAGECONFIG[tests] = "--enable-tests --enable-gpioset-interactive,--disable-tests,kmod util-linux glib-2.0 catch2 libedit"
+SRC_URI[sha256sum] = "b5367d28d045b36007a4ffd42cceda4c358737ef4f2ce22b0c1d05ec57a38392"
+
+# Enable all project features for ptest
+PACKAGECONFIG[tests] = "--enable-tests --enable-tools --enable-bindings-cxx --enable-gpioset-interactive,--disable-tests,kmod util-linux glib-2.0 catch2 libedit"
 PACKAGECONFIG[gpioset-interactive] = "--enable-gpioset-interactive,--disable-gpioset-interactive,libedit"
 
+PACKAGES =+ "${PN}-ptest-dev"
 FILES:${PN}-tools += "${bindir}/gpionotify"
 FILES:${PN}-ptest += "${libdir}/libgpiosim.so.*"
+FILES:${PN}-ptest-dev += "${includedir}/gpiosim.h"
 
 RRECOMMENDS:${PN}-ptest += "kernel-module-gpio-sim"
+
+do_install_ptest:append() {
+    install -m 0644 ${S}/tests/gpiosim/gpiosim.h ${D}${includedir}/gpiosim.h
+}
