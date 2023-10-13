@@ -17,6 +17,9 @@ RDEPENDS:${PN} = " \
     fping \
     git \
     iperf2 \
+    iproute2-tc \
+    iproute2-nstat \
+    iproute2-ss \
     iptraf \
     iputils-ping \
     ldd \
