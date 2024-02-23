@@ -38,6 +38,7 @@ RDEPENDS:${PN} = " \
     python3-pyserial \
     python3-shell \
     python3-usbtmc \
+    rpclib \
     screen \
     ser2net \
     socat \
