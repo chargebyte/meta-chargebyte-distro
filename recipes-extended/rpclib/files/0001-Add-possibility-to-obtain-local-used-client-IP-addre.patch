@@ -1,0 +1,56 @@
+From 6e2c4fdd8e98f015a61c53d561451d8e65dadad7 Mon Sep 17 00:00:00 2001
+From: Michael Heimpold <mhei@heimpold.de>
+Date: Wed, 28 Feb 2024 22:17:51 +0100
+Subject: [PATCH] Add possibility to obtain local/used client IP address
+
+Signed-off-by: Michael Heimpold <mhei@heimpold.de>
+---
+ include/rpc/client.h |  3 +++
+ lib/rpc/client.cc    | 10 ++++++++++
+ 2 files changed, 13 insertions(+)
+
+diff --git a/include/rpc/client.h b/include/rpc/client.h
+index fcd16eb..d3e2e4a 100644
+--- a/include/rpc/client.h
++++ b/include/rpc/client.h
+@@ -121,6 +121,9 @@ public:
+     //! \brief Returns the current connection state.
+     connection_state get_connection_state() const;
+ 
++    //! \brief Returns the local address of the connected socket.
++    std::string get_local_endpoint_address() const;
++
+     //! \brief Waits for the completion of all ongoing calls.
+     void wait_all_responses();
+ 
+diff --git a/lib/rpc/client.cc b/lib/rpc/client.cc
+index 6ab2c56..2d36030 100644
+--- a/lib/rpc/client.cc
++++ b/lib/rpc/client.cc
+@@ -128,6 +128,12 @@ struct client::impl {
+ 
+     client::connection_state get_connection_state() const { return state_; }
+ 
++    std::string get_local_endpoint_address() const {
++        std::ostringstream s;
++        s << writer_->socket().local_endpoint().address();
++        return s.str();
++    }
++
+     //! \brief Waits for the write queue and writes any buffers to the network
+     //! connection. Should be executed through strand_.
+     void write(RPCLIB_MSGPACK::sbuffer item) {
+@@ -220,6 +226,10 @@ client::connection_state client::get_connection_state() const {
+     return pimpl->get_connection_state();
+ }
+ 
++std::string client::get_local_endpoint_address() const {
++    return pimpl->get_local_endpoint_address();
++}
++
+ nonstd::optional<int64_t> client::get_timeout() const {
+     return pimpl->get_timeout();
+ }
+-- 
+2.34.1
+
