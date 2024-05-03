@@ -18,6 +18,7 @@ DEPENDS = "systemd"
 inherit autotools pkgconfig systemd
 
 SYSTEMD_SERVICE:${PN} = "${BPN}.service"
+SYSTEMD_AUTO_ENABLE ?= "disable"
 
 do_install:append() {
     install -m 0755 -d ${D}${sysconfdir}/default
