@@ -12,7 +12,6 @@ SRC_URI = " \
     file://system \
     file://system-generators \
     file://udev \
-    file://fstab \
     file://led.sh \
     file://usb-mount.sh \
     file://usb-mount.d \
@@ -32,7 +31,6 @@ do_install() {
     install -o root -g root -m 0755 ${WORKDIR}/init ${D}/sbin/init
 
     install -d ${D}/etc
-    install -o root -g root -m 0644 ${WORKDIR}/fstab               ${D}/etc
     install -o root -g root -m 0644 ${WORKDIR}/device_info         ${D}/etc
     install -o root -g root -m 0644 ${WORKDIR}/baptism-data.config ${D}/etc
     install -o root -g root -m 0755 ${WORKDIR}/rc.local            ${D}/etc
