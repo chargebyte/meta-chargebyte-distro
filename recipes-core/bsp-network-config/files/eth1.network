@@ -1,6 +1,6 @@
 [Match]
 Name=eth1
-Driver=qcaspi
+Driver=mse102x qcaspi
 
 [Network]
 DHCP=no
