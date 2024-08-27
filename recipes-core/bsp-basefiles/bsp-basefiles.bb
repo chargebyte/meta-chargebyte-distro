@@ -15,7 +15,7 @@ SRC_URI = " \
     file://led.sh \
     file://usb-mount.sh \
     file://usb-mount.d \
-    file://root \
+    ${@bb.utils.contains('MACHINE', 'chargesom', '', 'file://root', d)} \
     file://init \
     file://rc.local \
     file://rc-once.sh \
@@ -79,8 +79,10 @@ do_install() {
                ${D}${systemd_system_unitdir}/*
     fi
 
-    install -d ${D}/home/root/
-    cp --no-preserve=ownership ${WORKDIR}/root/* ${D}/home/root/
+    if ${@bb.utils.contains('MACHINE', 'chargesom', 'false', 'true', d)}; then
+        install -d ${D}/home/root/
+        cp --no-preserve=ownership ${WORKDIR}/root/* ${D}/home/root/
+    fi
 
     echo "DEVICE_FLAVOR='${FLAVOR}'" >> ${D}/etc/device_info
 }
