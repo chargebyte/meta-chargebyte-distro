@@ -75,7 +75,6 @@ do_install() {
         sed -i -e 's,@BASE_BINDIR@,${base_bindir},g' \
                -e 's,@BINDIR@,${bindir},g' \
                -e 's,@SBINDIR@,${sbindir},g' \
-               -e 's,@BINDIR@,${bindir},g' \
                ${D}${systemd_system_unitdir}/*
     fi
 
