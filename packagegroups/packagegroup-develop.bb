@@ -11,7 +11,8 @@ RDEPENDS:${PN} = " \
     can-utils \
     can-utils-essentials \
     cmake \
-    ${@bb.utils.contains("TUNE_FEATURES", "cortexa7", "cpuburn-arm", "", d)} \
+    ${@bb.utils.contains("TUNE_FEATURES", "armv5", "", "cpuburn-arm", d)} \
+    dtc \
     fio \
     flex \
     fping \
@@ -28,6 +29,7 @@ RDEPENDS:${PN} = " \
     libiio-iiod \
     libiio-python3 \
     libiio-tests \
+    lmbench \
     lmsensors-pwmconfig \
     mc \
     memtester \
@@ -44,6 +46,7 @@ RDEPENDS:${PN} = " \
     socat \
     sqlite3 \
     strace \
+    stress-ng \
     subversion \
     systemd-analyze \
     tmux \
