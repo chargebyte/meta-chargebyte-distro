@@ -27,6 +27,12 @@ do_install() {
         rm -f ${D}/lib/systemd/network/eth2.network
     fi
 
+    # remove files for HW interfaces not present on Charge SOM DC EVB
+    if ${@bb.utils.contains('SUBMACHINE', 'dc-evb', 'true', 'false', d)}; then
+        rm -f ${D}/lib/systemd/network/can1.network
+        rm -f ${D}/lib/systemd/network/eth2.network
+    fi
+
     # install a workaround to set MAC address of br0 interface to eth0 one's
     install -d ${D}/lib/systemd/system-generators
     install -o root -g root -m 0755 ${WORKDIR}/br0-mac-generator ${D}/lib/systemd/system-generators/
