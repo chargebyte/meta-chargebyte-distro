@@ -10,6 +10,9 @@ RDEPENDS:${PN} = " \
     crda \
     hostapd \
     iw \
+    tpm2-pkcs11 \
+    tpm2-tools \
+    tpm2-tss-engine \
     wpa-supplicant \
     wpa-supplicant-cli \
     wpa-supplicant-passphrase \
