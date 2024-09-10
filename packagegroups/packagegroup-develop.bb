@@ -47,7 +47,6 @@ RDEPENDS:${PN} = " \
     sqlite3 \
     strace \
     stress-ng \
-    subversion \
     systemd-analyze \
     tmux \
 "
