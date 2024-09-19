@@ -1,0 +1,38 @@
+From d5b9b970e3873007e26861d377751a4b36198bf2 Mon Sep 17 00:00:00 2001
+From: Moritz Barsnick <barsnick@gmx.net>
+Date: Thu, 19 Sep 2024 12:47:50 +0200
+Subject: [PATCH] Makefile.am: Fix build without pandoc
+
+When building from a tarball, pre-created man pages are preset. Yet `make
+clean` clobbers them, leaving their target directory intact. Therefore, the
+next configure call will try to build man pages even if pandoc isn't
+available.
+
+Fix this by cleaning the man pages only if they can be recreated by the
+presence of pandoc.
+
+Fixes https://github.com/tpm2-software/tpm2-tss-engine/issues/284
+
+Signed-off-by: Moritz Barsnick <moritz.barsnick@chargebyte.com>
+---
+ Makefile.am | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Makefile.am b/Makefile.am
+index bda32b4..29c34e3 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -217,8 +217,10 @@ EXTRA_DIST += \
+     man/tpm2tss_ecc_genkey.3.md \
+     man/tpm2tss_ecc_getappdata.3.md
+ 
++if HAVE_PANDOC
+ CLEANFILES += \
+     $(dist_man_MANS)
++endif
+ 
+ ### Bash Completion
+ bash_completiondir = $(completionsdir)
+-- 
+2.46.0
+
