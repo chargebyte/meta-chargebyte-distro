@@ -1,10 +1,11 @@
+#
+# This script re-configures the boot LED after successfully booting of the board.
+#
+
 [Unit]
 Description=LED boot notification
-#
-# This script sets the green LED to on after successfully booting of the board.
-#
 After=rauc-mark-good.service
-Requires=watchdogd.service
+Requires=rauc-mark-good.service
 
 [Service]
 Type=oneshot
