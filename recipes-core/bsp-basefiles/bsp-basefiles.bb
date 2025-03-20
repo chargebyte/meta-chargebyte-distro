@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit systemd
 
-PV = "1.19"
+PV = "1.20"
 
 PACKAGE_ARCH = "all"
 
@@ -55,8 +55,6 @@ do_install() {
 
     install -d ${D}/lib/systemd/system
     install -o root -g root -m 0644 ${WORKDIR}/led-boot-notification.service ${D}/lib/systemd/system
-    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    ln -sf /lib/systemd/system/led-boot-notification.service ${D}${sysconfdir}/systemd/system/multi-user.target.wants/led-boot-notification.service
 
     install -d ${D}/lib/udev/rules.d
     install -o root -g root -m 0644 ${WORKDIR}/udev/* ${D}/lib/udev/rules.d/
@@ -88,7 +86,7 @@ do_install() {
 
 FILES:${PN} = "/"
 
-SYSTEMD_SERVICE:${PN} = "srv.mount usb-mount@.service"
+SYSTEMD_SERVICE:${PN} = "srv.mount usb-mount@.service led-boot-notification.service"
 
 RDEPENDS:${PN} += " \
     e2fsprogs-e2fsck \
