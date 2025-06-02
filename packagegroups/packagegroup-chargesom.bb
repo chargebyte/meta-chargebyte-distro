@@ -8,6 +8,7 @@ inherit packagegroup
 RDEPENDS:${PN} = " \
     can-utils-essentials \
     crda \
+    csom-safety-fw \
     hostapd \
     iw \
     tpm2-pkcs11 \
