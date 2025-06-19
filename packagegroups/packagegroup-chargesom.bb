@@ -8,9 +8,9 @@ inherit packagegroup
 RDEPENDS:${PN} = " \
     can-utils-essentials \
     crda \
-    csom-safety-fw \
     hostapd \
     iw \
+    ra-utils \
     tpm2-pkcs11 \
     tpm2-tools \
     tpm2-tss-engine \

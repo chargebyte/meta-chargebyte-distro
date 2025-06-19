@@ -6,19 +6,17 @@ HOMEPAGE = "https://github.com/chargebyte/ra-utils"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 
-SRCREV = "4f4c4198a207f1cda82a98975ef17df929806c2d"
-PV = "0.3.0+git${SRCPV}"
+SRCREV = "66a66442a1da6bd1c75088c4adf98ba7b34489e5"
+PV = "0.4.0+git${SRCPV}"
 
 SRC_URI = "git://github.com/chargebyte/ra-utils.git;protocol=https;branch=main"
 S = "${WORKDIR}/git"
 
-inherit cmake pkgconfig
+inherit cmake pkgconfig systemd
 
 DEPENDS = "libgpiod"
 
-do_install:append() {
-    # rename the directory to match our package name
-    mv "${D}${datadir}/ra-utils" "${D}${datadir}/csom-safety-fw"
-}
+SYSTEMD_SERVICE:${PN} = "ra-update.service"
 
 FILES:${PN} += "${datadir}"
+FILES:${PN} += "${systemd_system_unitdir}"
