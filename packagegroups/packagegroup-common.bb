@@ -15,7 +15,8 @@ RDEPENDS:${PN} = " \
     ethtool \
     iproute2 \
     ${@bb.utils.contains("EXTRA_IMAGE_FEATURES", "debug-tweaks", "", "less", d)} \
-    ${@bb.utils.contains("SUBMACHINE", "micro", "", "open-plc-utils", d)} \
+    ${@bb.utils.contains("MACHINE", "parsley", "", \
+        bb.utils.contains("SUBMACHINE", "micro", "", "open-plc-utils", d), d)} \
     u-boot-fw-utils \
     util-linux-lsblk \
     ${@bb.utils.contains("SUBMACHINE", "micro", "", "usb-modeswitch", d)} \

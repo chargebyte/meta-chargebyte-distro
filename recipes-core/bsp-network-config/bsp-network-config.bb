@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "3"
+PV = "4"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -12,7 +12,9 @@ SRC_URI = " \
     file://can1.network \
     file://eth0.network \
     file://eth1.network \
+    file://eth1-parsley.network \
     file://eth2.network \
+    file://eth2-parsley.network \
     file://wlan0.network \
     file://wwan.network \
 "
@@ -31,6 +33,15 @@ do_install() {
     if ${@bb.utils.contains('SUBMACHINE', 'dc-evb', 'true', 'false', d)}; then
         rm -f ${D}/lib/systemd/network/can1.network
         rm -f ${D}/lib/systemd/network/eth2.network
+    fi
+
+    # adapt for Parsley platform specifics
+    if ${@bb.utils.contains('MACHINE', 'parsley', 'true', 'false', d)}; then
+        # not present
+        rm -f ${D}/lib/systemd/network/can1.network
+        # rename specific files
+        mv -f ${D}/lib/systemd/network/eth1-parsley.network ${D}/lib/systemd/network/eth1.network
+        mv -f ${D}/lib/systemd/network/eth2-parsley.network ${D}/lib/systemd/network/eth2.network
     fi
 
     # install a workaround to set MAC address of br0 interface to eth0 one's

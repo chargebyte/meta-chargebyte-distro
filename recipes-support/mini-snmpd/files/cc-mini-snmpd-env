@@ -28,6 +28,13 @@ case "$MODEL" in
 	EOF
 	;;
 
+*"Charge Control Y"*)
+	cat <<-EOF > "$ENVFILE"
+	LISTEN_INTERFACE="-I br0"
+	MONITOR_INTERFACES="-i br0,eth1,eth2"
+	EOF
+	;;
+
 *)
 	cat <<-EOF > "$ENVFILE"
 	LISTEN_INTERFACE=""

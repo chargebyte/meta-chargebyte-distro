@@ -21,6 +21,10 @@ case "$MODEL" in
 	LED="red:boot"
 	TRIGGER="heartbeat"
 	;;
+"chargebyte Charge Control Y")
+	LED="red:boot"
+	TRIGGER="heartbeat"
+	;;
 *)
 	exit 0
 esac

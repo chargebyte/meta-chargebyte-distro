@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit systemd
 
-PV = "1.20"
+PV = "1.21"
 
 PACKAGE_ARCH = "all"
 
@@ -15,7 +15,7 @@ SRC_URI = " \
     file://led.sh \
     file://usb-mount.sh \
     file://usb-mount.d \
-    ${@bb.utils.contains('MACHINE', 'chargesom', '', 'file://root', d)} \
+    ${@bb.utils.contains_any('MACHINE', 'chargesom parsley', '', 'file://root', d)} \
     file://init \
     file://rc.local \
     file://rc-once.sh \
@@ -76,7 +76,7 @@ do_install() {
                ${D}${systemd_system_unitdir}/*
     fi
 
-    if ${@bb.utils.contains('MACHINE', 'chargesom', 'false', 'true', d)}; then
+    if ${@bb.utils.contains_any('MACHINE', 'chargesom parsley', 'false', 'true', d)}; then
         install -d ${D}/home/root/
         cp --no-preserve=ownership ${WORKDIR}/root/* ${D}/home/root/
     fi

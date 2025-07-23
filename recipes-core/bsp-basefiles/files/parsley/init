@@ -1,0 +1,15 @@
+#!/bin/sh
+
+export LC_ALL=C LANGUAGE=C LANG=C
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+mount -t proc - /proc
+mount / -o remount,rw
+
+ format customer and data partition
+for i in mmcblk0p5 mmcblk0p6 mmcblk0p7; do
+	[ -b /dev/$i ] && mkfs.ext4 -F -F /dev/$i || true
+done
+
+mv /sbin/init.orig /sbin/init
+exec /sbin/init
