@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "4"
+PV = "5"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -12,7 +12,6 @@ SRC_URI = " \
     file://can1.network \
     file://eth0.network \
     file://eth1.network \
-    file://eth1-parsley.network \
     file://eth2.network \
     file://eth2-parsley.network \
     file://wlan0.network \
@@ -40,7 +39,6 @@ do_install() {
         # not present
         rm -f ${D}/lib/systemd/network/can1.network
         # rename specific files
-        mv -f ${D}/lib/systemd/network/eth1-parsley.network ${D}/lib/systemd/network/eth1.network
         mv -f ${D}/lib/systemd/network/eth2-parsley.network ${D}/lib/systemd/network/eth2.network
     fi
 

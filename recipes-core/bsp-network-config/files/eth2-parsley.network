@@ -1,7 +1,12 @@
 [Match]
 Name=eth2
-Driver=lan8650
+Driver=st_gmac
+
+[Link]
+RequiredForOnline=no
 
 [Network]
 DHCP=no
 IPv6AcceptRA=no
+LinkLocalAddressing=no
+ConfigureWithoutCarrier=yes
