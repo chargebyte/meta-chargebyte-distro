@@ -19,9 +19,8 @@ RDEPENDS:${PN} = " \
         bb.utils.contains("SUBMACHINE", "micro", "", "open-plc-utils", d), d)} \
     u-boot-fw-utils \
     util-linux-lsblk \
-    ${@bb.utils.contains("SUBMACHINE", "micro", "", "usb-modeswitch", d)} \
-    ${@bb.utils.contains("SUBMACHINE", "micro", "", "usb-modeswitch-data", d)} \
-    \
+    ${@bb.utils.contains("MACHINE", "parsley", "", \
+        bb.utils.contains("SUBMACHINE", "micro", "", "usb-modeswitch usb-modeswitch-data", d), d)} \
     bsp-basefiles \
     maccalc \
     memtool \

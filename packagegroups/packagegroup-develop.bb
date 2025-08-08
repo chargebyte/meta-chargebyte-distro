@@ -31,7 +31,7 @@ RDEPENDS:${PN} = " \
     libiio-python3 \
     libiio-tests \
     lmbench \
-    lmsensors-pwmconfig \
+    ${@bb.utils.contains("MACHINE", "tarragon", "lmsensors-pwmconfig", "", d)} \
     ${@bb.utils.contains("MACHINE", "chargesom", "node-red nodejs-npm", "", d)} \
     mc \
     memtester \
