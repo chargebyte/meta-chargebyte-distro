@@ -1,6 +1,9 @@
 [Match]
 Name=eth2
-Driver=st_gmac
+# Note: We cannot bind it to this driver name because there seems
+# to be a race/bug during boot which prevents udev ID_NET_DRIVER
+# being set. Calling "udevadm trigger --subsystem-match=net" works.
+#Driver=st_gmac
 
 [Link]
 RequiredForOnline=no
