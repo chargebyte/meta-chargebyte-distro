@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "6"
+PV = "7"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -11,6 +11,7 @@ SRC_URI = " \
     file://can0.network \
     file://can1.network \
     file://eth0.network \
+    file://eth0-parsley.network \
     file://eth1.network \
     file://eth2.network \
     file://eth2-parsley.network \
@@ -21,6 +22,10 @@ SRC_URI = " \
 do_install() {
     install -d ${D}/lib/systemd/network
     install -o root -g root -m 0644 ${WORKDIR}/*.net* ${D}/lib/systemd/network
+
+    # install a workaround to set MAC address of br0 interface to eth0 one's
+    install -d ${D}/lib/systemd/system-generators
+    install -o root -g root -m 0755 ${WORKDIR}/br0-mac-generator ${D}/lib/systemd/system-generators/
 
     # remove files for HW interfaces not present on EVAcharge SE
     if ${@bb.utils.contains('MACHINE', 'evachargese', 'true', 'false', d)}; then
@@ -39,12 +44,14 @@ do_install() {
         # not present
         rm -f ${D}/lib/systemd/network/can1.network
         # rename specific files
+        mv -f ${D}/lib/systemd/network/eth0-parsley.network ${D}/lib/systemd/network/eth0.network
         mv -f ${D}/lib/systemd/network/eth2-parsley.network ${D}/lib/systemd/network/eth2.network
+        # we don't use a bridge (bridges are not compatible with profinet and we don't want to
+        # to restrict users)
+        rm -f ${D}/lib/systemd/network/br0.*
+        # delete the workaround, not needed here
+        rm -f ${D}/lib/systemd/system-generators/br0-mac-generator
     fi
-
-    # install a workaround to set MAC address of br0 interface to eth0 one's
-    install -d ${D}/lib/systemd/system-generators
-    install -o root -g root -m 0755 ${WORKDIR}/br0-mac-generator ${D}/lib/systemd/system-generators/
 }
 
 FILES:${PN} = "/"
