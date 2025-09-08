@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "7"
+PV = "8"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -51,6 +51,9 @@ do_install() {
         rm -f ${D}/lib/systemd/network/br0.*
         # delete the workaround, not needed here
         rm -f ${D}/lib/systemd/system-generators/br0-mac-generator
+    else
+        # delete parsley specific files for all other platforms
+        rm -f ${D}/lib/systemd/network/*parsley*
     fi
 }
 
