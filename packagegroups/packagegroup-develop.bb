@@ -32,7 +32,6 @@ RDEPENDS:${PN} = " \
     libiio-tests \
     lmbench \
     ${@bb.utils.contains("MACHINE", "tarragon", "lmsensors-pwmconfig", "", d)} \
-    ${@bb.utils.contains("MACHINE", "chargesom", "node-red nodejs-npm", "", d)} \
     mc \
     memtester \
     nano \
