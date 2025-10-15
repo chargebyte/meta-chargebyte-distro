@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "8"
+PV = "9"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -17,6 +17,7 @@ SRC_URI = " \
     file://eth2-parsley.network \
     file://wlan0.network \
     file://wwan.network \
+    file://99-eth1-plca-config.rules \
 "
 
 do_install() {
@@ -51,6 +52,9 @@ do_install() {
         rm -f ${D}/lib/systemd/network/br0.*
         # delete the workaround, not needed here
         rm -f ${D}/lib/systemd/system-generators/br0-mac-generator
+        # install PLCA config udev rule
+        install -d ${D}/lib/udev/rules.d
+        install -o root -g root -m 0644 ${WORKDIR}/99-eth1-plca-config.rules ${D}/lib/udev/rules.d/
     else
         # delete parsley specific files for all other platforms
         rm -f ${D}/lib/systemd/network/*parsley*

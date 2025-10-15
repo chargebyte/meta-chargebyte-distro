@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", ACTION=="add", NAME=="eth1", RUN+="/usr/sbin/ethtool --set-plca-cfg eth1 enable on node-id 0 node-cnt 8 to-tmr 0x20 burst-cnt 0x0 burst-tmr 0x80”
