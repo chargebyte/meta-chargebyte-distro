@@ -25,6 +25,7 @@ RDEPENDS:${PN} = " \
     iptraf \
     iputils-ping \
     ldd \
+    libevdev \
     libgpiod-tools \
     libiio \
     libiio-iiod \
