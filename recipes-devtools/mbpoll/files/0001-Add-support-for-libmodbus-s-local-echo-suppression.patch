@@ -1,0 +1,104 @@
+From a0c93519d031ce17268065b327f3e59601619357 Mon Sep 17 00:00:00 2001
+From: Michael Heimpold <mhei@heimpold.de>
+Date: Fri, 18 Apr 2025 21:54:48 +0200
+Subject: [PATCH] Add support for libmodbus's local echo suppression
+
+The feature was initially announced here:
+https://github.com/stephane/libmodbus/pull/432
+
+It is required on some platforms, e.g. on
+chargebyte's Tarragon devices.
+
+Signed-off-by: Michael Heimpold <mhei@heimpold.de>
+---
+ src/mbpoll.c | 27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
+
+diff --git a/src/mbpoll.c b/src/mbpoll.c
+index e788742b1a2b..cf0e73a02750 100644
+--- a/src/mbpoll.c
++++ b/src/mbpoll.c
+@@ -42,6 +42,9 @@
+ #include "version-git.h"
+ #include "mbpoll-config.h"
+ 
++/* weak forward declaration */
++int modbus_rtu_set_suppress_echo(modbus_t *ctx, bool on) __attribute__((weak));
++
+ /* constants ================================================================ */
+ #define AUTHORS "Pascal JEAN"
+ #define WEBSITE "https://github.com/epsilonrt/mbpoll"
+@@ -237,6 +240,7 @@ typedef struct xMbPollContext {
+   eSerialDataBits eRtuDatabits;
+   eSerialStopBits eRtuStopbits;
+   eSerialParity eRtuParity;
++  bool bLocalEchoSuppressing;
+   bool bIsVerbose;
+   bool bIsPolling;
+   int  iRtuMode;
+@@ -285,6 +289,7 @@ static xMbPollContext ctx = {
+     .parity = DEFAULT_RTU_PARITY,
+     .flow = SERIAL_FLOW_NONE
+   },
++  .bLocalEchoSuppressing = false,
+   .bIsVerbose = false,
+   .bIsPolling = true,
+   .bIsReportSlaveID = false,
+@@ -324,14 +329,14 @@ static xChipIoSerial * xChipSerial;
+ static const char sChipIoSlaveAddrStr[] = "chipio slave address";
+ static const char sChipIoIrqPinStr[] = "chipio irq pin";
+ // option -i et -n supplémentaires pour chipio
+-static const char * short_options = "m:a:r:c:t:1l:o:p:b:d:s:P:u0WRhVvwBqi:n:";
++static const char * short_options = "m:a:r:c:t:1l:o:p:b:d:s:P:u0WERhVvwBqi:n:";
+ 
+ #else /* USE_CHIPIO == 0 */
+ /* constants ================================================================ */
+ #ifdef MBPOLL_GPIO_RTS
+-static const char * short_options = "m:a:r:c:t:1l:o:p:b:d:s:P:u0WR::F::hVvwBq";
++static const char * short_options = "m:a:r:c:t:1l:o:p:b:d:s:P:u0WER::F::hVvwBq";
+ #else
+-static const char * short_options = "m:a:r:c:t:1l:o:p:b:d:s:P:u0WRFhVvwBq";
++static const char * short_options = "m:a:r:c:t:1l:o:p:b:d:s:P:u0WERFhVvwBq";
+ #endif
+ // -----------------------------------------------------------------------------
+ #endif /* USE_CHIPIO == 0 */
+@@ -502,6 +507,10 @@ main (int argc, char **argv) {
+         ctx.bIsBigEndian = true;
+         break;
+ 
++      case 'E':
++        ctx.bLocalEchoSuppressing = true;
++        break;
++
+       case 'R':
+         ctx.iRtuMode = MODBUS_RTU_RTS_DOWN;
+ #ifdef MBPOLL_GPIO_RTS
+@@ -845,6 +854,17 @@ main (int argc, char **argv) {
+     modbus_rtu_set_rts (ctx.xBus, ctx.iRtuMode);
+   }
+ 
++  if (modbus_rtu_set_suppress_echo) {
++      PDEBUG ("%senabling local echo suppression\n", ctx.bLocalEchoSuppressing ? "" : "not ");
++      modbus_rtu_set_suppress_echo (ctx.xBus, ctx.bLocalEchoSuppressing);
++  } else {
++    if (ctx.bLocalEchoSuppressing) {
++      vIoErrorExit ("local echo suppression support requested, but not supported by libmodbus.");
++    } else {
++      PDEBUG ("libmodbus without local echo suppression support");
++    }
++  }
++
+   // Connection au bus
+   if (modbus_connect (ctx.xBus) == -1) {
+ 
+@@ -1443,6 +1463,7 @@ vUsage (FILE * stream, int exit_msg) {
+ #endif
+            "  -0            First reference is 0 (PDU addressing) instead 1\n"
+            "  -W            Using function 10 for write a single register\n"
++           "  -E            Enable libmodbus's local echo suppressing\n"
+            "  -B            Big endian word order for 32-bit integer and float\n"
+            "  -1            Poll only once only, otherwise every poll rate interval\n"
+            "  -l #          Poll rate in ms, ( > %d, %d is default)\n"
+-- 
+2.34.1
+
