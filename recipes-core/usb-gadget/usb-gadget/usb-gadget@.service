@@ -1,0 +1,13 @@
+[Unit]
+Description=Configure USB gadget (%i)
+Requires=sys-kernel-config.mount
+After=sys-kernel-config.mount
+
+[Service]
+Type=simple
+ExecStart=/usr/libexec/usb-gadget.sh start %i
+ExecStop=/usr/libexec/usb-gadget.sh stop %i
+RemainAfterExit=yes
+
+[Install]
+WantedBy=usb-gadget.target

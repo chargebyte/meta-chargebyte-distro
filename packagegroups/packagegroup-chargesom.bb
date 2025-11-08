@@ -16,6 +16,7 @@ RDEPENDS:${PN} = " \
     tpm2-tools \
     tpm2-tss-engine \
     tulum-utils \
+    usb-gadget \
     wpa-supplicant \
     wpa-supplicant-cli \
     wpa-supplicant-passphrase \
