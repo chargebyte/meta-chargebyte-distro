@@ -26,4 +26,5 @@ RDEPENDS:${PN} = " \
     memtool \
     ${@bb.utils.contains("SUBMACHINE", "micro", "", "mini-snmpd", d)} \
     c-periphery \
+    libbaptismdata \
 "
