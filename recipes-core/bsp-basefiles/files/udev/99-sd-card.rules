@@ -1,0 +1,3 @@
+# SD card partition rules
+KERNEL=="mmcblk1p[0-9]", SUBSYSTEMS=="mmc", ACTION=="add", RUN+="/bin/systemctl --no-block start usb-mount@%k.service"
+KERNEL=="mmcblk1p[0-9]", SUBSYSTEMS=="mmc", ACTION=="remove", RUN+="/bin/systemctl --no-block stop usb-mount@%k.service"
