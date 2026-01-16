@@ -6,8 +6,8 @@ HOMEPAGE = "https://github.com/chargebyte/ra-utils"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 
-SRCREV = "e89e0f05bdf315b4bffcb0a8374bc8d66171b710"
-PV = "0.11.0+git${SRCPV}"
+SRCREV = "aab25606dc45de4a62575177c5cca5df7505b083"
+PV = "0.12.0+git${SRCPV}"
 
 SRC_URI = "git://github.com/chargebyte/ra-utils.git;protocol=https;branch=main"
 S = "${WORKDIR}/git"
@@ -18,7 +18,7 @@ DEPENDS = "libgpiod libyaml"
 
 PACKAGES =+ "${PN}-fw-chargesom ${PN}-fw-parsley"
 
-SYSTEMD_SERVICE:${PN} = "ra-update.service"
+SYSTEMD_SERVICE:${PN} = "ra-update@ttyLP1.service ra-update@ttyLP2.service"
 
 FILES:${PN} += "${datadir}"
 FILES:${PN} += "${systemd_system_unitdir}"
