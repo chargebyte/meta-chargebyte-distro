@@ -22,7 +22,7 @@ case "$MODEL" in
 	TRIGGER="heartbeat"
 	;;
 "chargebyte Charge Control Y")
-	LED="red:boot"
+	LED="green:boot"
 	TRIGGER="heartbeat"
 	;;
 *)
