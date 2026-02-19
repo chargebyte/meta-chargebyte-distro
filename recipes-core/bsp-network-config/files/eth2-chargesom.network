@@ -1,0 +1,7 @@
+[Match]
+Name=eth2
+Driver=mse102x
+
+[Network]
+DHCP=no
+IPv6AcceptRA=no
