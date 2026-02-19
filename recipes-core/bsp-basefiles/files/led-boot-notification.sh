@@ -17,8 +17,16 @@ case "$MODEL" in
 "I2SE Tarragon"*)
 	LED="evse:green:led1"
 	;;
+"chargebyte Charge SOM")
+	# plain Charge SOM does not have any user LED
+	exit 0
+	;;
 "chargebyte Charge SOM"*)
 	LED="red:boot"
+	TRIGGER="heartbeat"
+	;;
+"chargebyte Charge Control V")
+	LED="green:boot"
 	TRIGGER="heartbeat"
 	;;
 "chargebyte Charge Control Y")

@@ -17,6 +17,9 @@ case "$MODEL" in
 "I2SE Tarragon"*)
 	LED="evse:yellow:led2"
 	;;
+"chargebyte Charge Control V"*)
+	LED="orange:activity"
+	;;
 *)
 	exit 0
 esac
