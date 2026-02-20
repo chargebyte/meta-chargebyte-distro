@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "9"
+PV = "10"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -14,7 +14,9 @@ SRC_URI = " \
     file://eth0-parsley.network \
     file://eth1.network \
     file://eth2.network \
+    file://eth2-chargesom.network \
     file://eth2-parsley.network \
+    file://eth3.network \
     file://wlan0.network \
     file://wwan.network \
     file://99-eth1-plca-config.rules \
@@ -28,16 +30,26 @@ do_install() {
     install -d ${D}/lib/systemd/system-generators
     install -o root -g root -m 0755 ${WORKDIR}/br0-mac-generator ${D}/lib/systemd/system-generators/
 
+    # remove files for HW interfaces not present on Tarragon
+    if ${@bb.utils.contains('MACHINE', 'tarragon', 'true', 'false', d)}; then
+        rm -f ${D}/lib/systemd/network/can1.network
+        rm -f ${D}/lib/systemd/network/eth3.network
+    fi
+
     # remove files for HW interfaces not present on EVAcharge SE
     if ${@bb.utils.contains('MACHINE', 'evachargese', 'true', 'false', d)}; then
         rm -f ${D}/lib/systemd/network/can1.network
         rm -f ${D}/lib/systemd/network/eth2.network
+        rm -f ${D}/lib/systemd/network/eth3.network
     fi
 
-    # remove files for HW interfaces not present on Charge SOM DC EVB
-    if ${@bb.utils.contains('SUBMACHINE', 'dc-evb', 'true', 'false', d)}; then
-        rm -f ${D}/lib/systemd/network/can1.network
-        rm -f ${D}/lib/systemd/network/eth2.network
+    # remove files for HW interfaces not present on Charge SOM platforms
+    if ${@bb.utils.contains('MACHINE', 'chargesom', 'true', 'false', d)}; then
+        # rename specific file
+        mv -f ${D}/lib/systemd/network/eth2-chargesom.network ${D}/lib/systemd/network/eth2.network
+    else
+        # delete chargesom specific files for all other platforms
+        rm -f ${D}/lib/systemd/network/*chargesom*
     fi
 
     # adapt for Parsley platform specifics
