@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "10"
+PV = "11"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -54,8 +54,11 @@ do_install() {
 
     # adapt for Parsley platform specifics
     if ${@bb.utils.contains('MACHINE', 'parsley', 'true', 'false', d)}; then
-        # not present
+        # not present / not possible
         rm -f ${D}/lib/systemd/network/can1.network
+        rm -f ${D}/lib/systemd/network/eth3.network
+        rm -f ${D}/lib/systemd/network/wlan0.network
+        rm -f ${D}/lib/systemd/network/wwan.network
         # rename specific files
         mv -f ${D}/lib/systemd/network/eth0-parsley.network ${D}/lib/systemd/network/eth0.network
         mv -f ${D}/lib/systemd/network/eth2-parsley.network ${D}/lib/systemd/network/eth2.network
