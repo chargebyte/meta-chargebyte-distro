@@ -37,6 +37,7 @@ RDEPENDS:${PN} = " \
     memtester \
     nano \
     openssl-bin \
+    phytool \
     pistache \
     procps-ps \
     python3 \
