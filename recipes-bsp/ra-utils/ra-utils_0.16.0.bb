@@ -6,8 +6,8 @@ HOMEPAGE = "https://github.com/chargebyte/ra-utils"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 
-SRCREV = "d4c436a212ad4fc7bbbbf900557c135c10be0722"
-PV = "0.15.0+git${SRCPV}"
+SRCREV = "ece2c598ffef4c00b5f79732732cc0174dcc70f7"
+PV = "0.16.0+git${SRCPV}"
 
 SRC_URI = "git://github.com/chargebyte/ra-utils.git;protocol=https;branch=main"
 S = "${WORKDIR}/git"
