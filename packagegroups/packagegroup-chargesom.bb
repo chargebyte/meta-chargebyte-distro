@@ -8,6 +8,7 @@ inherit packagegroup
 RDEPENDS:${PN} = " \
     can-utils-essentials \
     cb-eeprom-utils \
+    cc33xx-fw \
     crda \
     hostapd \
     iw \
