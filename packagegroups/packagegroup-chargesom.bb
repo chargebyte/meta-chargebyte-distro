@@ -9,7 +9,7 @@ RDEPENDS:${PN} = " \
     can-utils-essentials \
     cb-eeprom-utils \
     cc33xx-fw \
-    crda \
+    wireless-regdb-static \
     hostapd \
     iw \
     ra-utils \
