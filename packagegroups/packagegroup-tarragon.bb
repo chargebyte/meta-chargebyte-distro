@@ -7,7 +7,7 @@ inherit packagegroup
 
 RDEPENDS:${PN} = " \
     ${@bb.utils.contains("SUBMACHINE", "micro", "", "cc-qca-fixup", d)} \
-    crda \
+    wireless-regdb-static \
     hostapd \
     iw \
     ${@bb.utils.contains("SUBMACHINE", "micro", "", "lmsensors-fancontrol", d)} \
