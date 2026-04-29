@@ -27,4 +27,5 @@ RDEPENDS:${PN} = " \
     ${@bb.utils.contains("SUBMACHINE", "micro", "", "mini-snmpd", d)} \
     c-periphery \
     libbaptismdata \
+    tpm2-openssl \
 "
