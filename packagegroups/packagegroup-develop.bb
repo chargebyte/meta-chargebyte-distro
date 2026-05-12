@@ -45,6 +45,7 @@ RDEPENDS:${PN} = " \
     python3-pyserial \
     python3-shell \
     python3-usbtmc \
+    rs485test \
     rpclib \
     screen \
     ser2net \
