@@ -14,8 +14,10 @@ do_install:append() {
     install -d ${D}${sysconfdir}/mosquitto/conf.d
     install -m 0644 ${WORKDIR}/confd-README ${D}${sysconfdir}/mosquitto/conf.d/README
 
+    install -d ${D}${nonarch_base_libdir}/mosquitto/conf.d
+
     install -d "${D}${sysconfdir}/logrotate.d"
     install -m 644 ${WORKDIR}/mosquitto.logrotate ${D}${sysconfdir}/logrotate.d/mosquitto
 }
 
-FILES:${PN}:append = " ${sysconfdir}/logrotate.d"
+FILES:${PN}:append = " ${sysconfdir}/logrotate.d ${nonarch_base_libdir}/mosquitto/conf.d"
