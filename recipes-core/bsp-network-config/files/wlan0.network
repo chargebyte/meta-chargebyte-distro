@@ -5,5 +5,5 @@ Name=wlan0
 RequiredForOnline=no
 
 [Network]
-DHCP=no
-IPv6AcceptRA=no
+DHCP=yes
+IPv6AcceptRA=yes
