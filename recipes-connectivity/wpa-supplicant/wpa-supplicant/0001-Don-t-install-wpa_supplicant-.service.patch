@@ -1,0 +1,32 @@
+From dd5368f663d68d228f8ae65168d07b3c1c649e81 Mon Sep 17 00:00:00 2001
+From: Michael Heimpold <michael.heimpold@chargebyte.com>
+Date: Thu, 28 May 2026 16:25:40 +0200
+Subject: [PATCH] Don't install wpa_supplicant@.service
+
+This causes timeouts during boot, we better use udev rules to
+trigger loading/starting of these units.
+
+Signed-off-by: Michael Heimpold <michael.heimpold@chargebyte.com>
+---
+ wpa_supplicant/systemd/wpa_supplicant.service.arg.in | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
+index 55d2b9c81712..3e2dddb83f1e 100644
+--- a/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
++++ b/wpa_supplicant/systemd/wpa_supplicant.service.arg.in
+@@ -5,11 +5,6 @@ After=sys-subsystem-net-devices-%i.device
+ Before=network.target
+ Wants=network.target
+ 
+-# NetworkManager users will probably want the dbus version instead.
+-
+ [Service]
+ Type=simple
+ ExecStart=@BINDIR@/wpa_supplicant -c/etc/wpa_supplicant/wpa_supplicant-%I.conf -i%I
+-
+-[Install]
+-WantedBy=multi-user.target
+-- 
+2.34.1
+
