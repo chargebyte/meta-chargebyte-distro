@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "11"
+PV = "12"
 
 SRC_URI = " \
     file://br0-mac-generator \
