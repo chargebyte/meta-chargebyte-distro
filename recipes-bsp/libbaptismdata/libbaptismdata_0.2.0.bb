@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://LICENSES/LGPL-2.1-or-later.txt;md5=4fbd65380cdd255951
 SECTION = "libs"
 
 SRC_URI = "https://github.com/mhei/${BPN}/releases/download/v${PV}/${BPN}-${PV}.tar.xz"
-SRC_URI[sha256sum] = "43eeb1fd8f5cdbf9fd293c772cbdea3b5850012e08c37bbbb5e99409146c2774"
+SRC_URI[sha256sum] = "f1be8557abff1fa390f15d78e3833a77a7576ed28b9de9ffaef338b713f56bcb"
 
 inherit autotools pkgconfig
 
