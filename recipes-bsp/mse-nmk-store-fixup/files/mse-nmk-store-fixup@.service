@@ -1,0 +1,9 @@
+[Unit]
+Description=MSE102x NMK Store Fixup
+After=csom-mse102x-fixup@%i.service
+Before=mse-fw-update@%i.service everest.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/mse-nmk-store-fixup.sh
+Environment="IFACE=%i"

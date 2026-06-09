@@ -1,0 +1,1 @@
+SUBSYSTEM=="net", ACTION=="add", ENV{ID_NET_DRIVER}=="mse102x", TAG+="systemd", ENV{SYSTEMD_WANTS}+="mse-nmk-store-fixup@%k.service"
