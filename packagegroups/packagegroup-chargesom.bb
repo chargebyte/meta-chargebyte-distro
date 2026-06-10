@@ -8,6 +8,7 @@ inherit packagegroup
 RDEPENDS:${PN} = " \
     can-utils-essentials \
     cb-eeprom-utils \
+    mse-nmk-store-fixup \
     cc33xx-fw \
     bluez5 \
     wireless-regdb-static \
