@@ -1,0 +1,17 @@
+#
+# This script enables the cc33xx chipset's bluetooth
+#
+
+[Unit]
+Description=Enable cc33xx Bluetooth
+After=sys-kernel-debug.mount
+Requires=sys-kernel-debug.mount
+Before=bluetooth.service
+ConditionPathExists=/sys/module/cc33xx
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'echo "1" > /sys/kernel/debug/ieee80211/phy0/cc33xx/ble_enable'
+
+[Install]
+WantedBy=multi-user.target

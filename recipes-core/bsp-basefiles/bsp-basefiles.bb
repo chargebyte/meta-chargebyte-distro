@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit systemd
 
-PV = "1.24"
+PV = "1.25"
 
 PACKAGE_ARCH = "all"
 
@@ -24,6 +24,7 @@ SRC_URI = " \
     file://mount-other-rootfs \
     file://led-boot-notification.service \
     file://led-boot-notification.sh \
+    file://cc33xx-bt-enable.service \
 "
 
 do_install() {
@@ -55,6 +56,7 @@ do_install() {
 
     install -d ${D}/lib/systemd/system
     install -o root -g root -m 0644 ${WORKDIR}/led-boot-notification.service ${D}/lib/systemd/system
+    install -o root -g root -m 0644 ${WORKDIR}/cc33xx-bt-enable.service ${D}/lib/systemd/system
 
     install -d ${D}/lib/udev/rules.d
     install -o root -g root -m 0644 ${WORKDIR}/udev/* ${D}/lib/udev/rules.d/
@@ -86,7 +88,12 @@ do_install() {
 
 FILES:${PN} = "/"
 
-SYSTEMD_SERVICE:${PN} = "srv.mount usb-mount@.service led-boot-notification.service"
+SYSTEMD_SERVICE:${PN} = " \
+    cc33xx-bt-enable.service \
+    led-boot-notification.service \
+    srv.mount \
+    usb-mount@.service \
+"
 
 RDEPENDS:${PN} += " \
     e2fsprogs-e2fsck \
