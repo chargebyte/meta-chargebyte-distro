@@ -6,9 +6,15 @@ Driver=g_ether
 RequiredForOnline=no
 
 [Network]
-Address=0.0.0.0/28
+# usually this should be 0.0.0.0/28 so that systemd-networkd
+# itself chooses a random free IPv4 address range, but there
+# is a bug in our current version v250.x which should already
+# be fixed upstream, so let's use the workaround for now and
+# use a more or less random fixed IPv4 for now
+Address=192.168.76.145/28
 DHCPServer=yes
-IPForward=ipv6
+IPForward=yes
+IPMasquerade=ipv4
 IPv6SendRA=yes
 DHCPPrefixDelegation=yes
 
