@@ -24,9 +24,7 @@ RDEPENDS:${PN} = " \
     iproute2-ss \
     iptraf \
     iputils-ping \
-    ldd \
     libevdev \
-    libgpiod-tools \
     libiio \
     libiio-iiod \
     libiio-python3 \
@@ -35,8 +33,6 @@ RDEPENDS:${PN} = " \
     ${@bb.utils.contains("MACHINE", "tarragon", "lmsensors-pwmconfig", "", d)} \
     mc \
     memtester \
-    nano \
-    openssl-bin \
     phytool \
     pistache \
     procps-ps \
