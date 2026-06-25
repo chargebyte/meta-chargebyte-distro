@@ -14,6 +14,10 @@ RDEPENDS:${PN} = " \
     openssh-sftp-server \
     ethtool \
     iproute2 \
+    ldd \
+    libgpiod-tools \
+    nano \
+    openssl-bin \
     ${@bb.utils.contains("EXTRA_IMAGE_FEATURES", "debug-tweaks", "", "less", d)} \
     ${@bb.utils.contains("MACHINE", "parsley", "", \
         bb.utils.contains("SUBMACHINE", "micro", "", "open-plc-utils", d), d)} \
