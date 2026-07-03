@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "12"
+PV = "13"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -10,6 +10,7 @@ SRC_URI = " \
     file://br0.network \
     file://can0.network \
     file://can1.network \
+    file://dsa-ports.network \
     file://eth0.network \
     file://eth0-parsley.network \
     file://eth1.network \
@@ -34,6 +35,7 @@ do_install() {
     if ${@bb.utils.contains('MACHINE', 'tarragon', 'true', 'false', d)}; then
         rm -f ${D}/lib/systemd/network/can1.network
         rm -f ${D}/lib/systemd/network/eth3.network
+        rm -f ${D}/lib/systemd/network/dsa-ports.network
     fi
 
     # remove files for HW interfaces not present on EVAcharge SE
@@ -41,6 +43,7 @@ do_install() {
         rm -f ${D}/lib/systemd/network/can1.network
         rm -f ${D}/lib/systemd/network/eth2.network
         rm -f ${D}/lib/systemd/network/eth3.network
+        rm -f ${D}/lib/systemd/network/dsa-ports.network
     fi
 
     # remove files for HW interfaces not present on Charge SOM platforms
@@ -59,6 +62,7 @@ do_install() {
         rm -f ${D}/lib/systemd/network/eth3.network
         rm -f ${D}/lib/systemd/network/wlan0.network
         rm -f ${D}/lib/systemd/network/wwan.network
+        rm -f ${D}/lib/systemd/network/dsa-ports.network
         # rename specific files
         mv -f ${D}/lib/systemd/network/eth0-parsley.network ${D}/lib/systemd/network/eth0.network
         mv -f ${D}/lib/systemd/network/eth2-parsley.network ${D}/lib/systemd/network/eth2.network

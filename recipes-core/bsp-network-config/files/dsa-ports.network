@@ -1,0 +1,6 @@
+[Match]
+Name=lan*
+
+[Network]
+Bridge=br0
+ConfigureWithoutCarrier=yes
