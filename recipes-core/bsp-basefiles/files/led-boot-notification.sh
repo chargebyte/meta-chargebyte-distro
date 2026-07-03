@@ -22,6 +22,7 @@ case "$MODEL" in
 	exit 0
 	;;
 "chargebyte Charge SOM"*)
+"chargebyte Protolime")
 	LED="red:boot"
 	TRIGGER="heartbeat"
 	;;
