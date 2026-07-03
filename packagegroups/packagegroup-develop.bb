@@ -29,6 +29,7 @@ RDEPENDS:${PN} = " \
     libiio-iiod \
     libiio-python3 \
     libiio-tests \
+    linux-firmware-rtl8153 \
     lmbench \
     ${@bb.utils.contains("MACHINE", "tarragon", "lmsensors-pwmconfig", "", d)} \
     mc \
