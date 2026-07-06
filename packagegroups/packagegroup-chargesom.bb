@@ -15,7 +15,7 @@ RDEPENDS:${PN} = " \
     hostapd \
     iw \
     ra-utils \
-    ra-utils-fw-${MACHINE} \
+    ra-utils-fw-chargesom \
     tpm2-pkcs11 \
     tpm2-tools \
     tpm2-tss-engine \

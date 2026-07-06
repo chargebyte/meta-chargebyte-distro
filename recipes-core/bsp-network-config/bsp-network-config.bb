@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "13"
+PV = "14"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -16,6 +16,7 @@ SRC_URI = " \
     file://eth1.network \
     file://eth2.network \
     file://eth2-chargesom.network \
+    file://eth2-lime.network \
     file://eth2-parsley.network \
     file://eth3.network \
     file://wlan0.network \
@@ -53,6 +54,15 @@ do_install() {
     else
         # delete chargesom specific files for all other platforms
         rm -f ${D}/lib/systemd/network/*chargesom*
+    fi
+
+    # remove files for HW interfaces not present on Lime platforms
+    if ${@bb.utils.contains('MACHINE', 'lime', 'true', 'false', d)}; then
+        # rename specific file
+        mv -f ${D}/lib/systemd/network/eth2-lime.network ${D}/lib/systemd/network/eth2.network
+    else
+        # delete lime specific files for all other platforms
+        rm -f ${D}/lib/systemd/network/*lime*
     fi
 
     # adapt for Parsley platform specifics
