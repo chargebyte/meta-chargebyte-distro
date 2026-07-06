@@ -11,18 +11,17 @@ case "$MODEL" in
 "I2SE EVAcharge SE")
 	LED="evse:green:led3"
 	;;
-"chargebyte Tarragon"*)
-	LED="green:boot"
-	;;
 "I2SE Tarragon"*)
 	LED="evse:green:led1"
+	;;
+"chargebyte Tarragon"*)
+	LED="green:boot"
 	;;
 "chargebyte Charge SOM")
 	# plain Charge SOM does not have any user LED
 	exit 0
 	;;
 "chargebyte Charge SOM"*)
-"chargebyte Protolime")
 	LED="red:boot"
 	TRIGGER="heartbeat"
 	;;
@@ -32,6 +31,10 @@ case "$MODEL" in
 	;;
 "chargebyte Charge Control Y")
 	LED="green:boot"
+	TRIGGER="heartbeat"
+	;;
+"chargebyte Lime"|"chargebyte Protolime")
+	LED="red:boot"
 	TRIGGER="heartbeat"
 	;;
 *)

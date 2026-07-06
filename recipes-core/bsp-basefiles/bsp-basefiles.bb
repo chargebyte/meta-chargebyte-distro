@@ -78,7 +78,7 @@ do_install() {
                ${D}${systemd_system_unitdir}/*
     fi
 
-    if ${@bb.utils.contains_any('MACHINE', 'chargesom parsley', 'false', 'true', d)}; then
+    if ${@bb.utils.contains_any('MACHINE', 'chargesom lime parsley', 'false', 'true', d)}; then
         install -d ${D}/home/root/
         cp --no-preserve=ownership ${WORKDIR}/root/* ${D}/home/root/
     fi
