@@ -15,7 +15,7 @@ SRC_URI = " \
     file://led.sh \
     file://usb-mount.sh \
     file://usb-mount.d \
-    ${@bb.utils.contains_any('MACHINE', 'chargesom parsley', '', 'file://root', d)} \
+    ${@bb.utils.contains_any('MACHINE', 'chargesom lime parsley', '', 'file://root', d)} \
     file://init \
     file://rc.local \
     file://rc-once.sh \
