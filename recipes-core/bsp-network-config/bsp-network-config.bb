@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit allarch
 
-PV = "14"
+PV = "15"
 
 SRC_URI = " \
     file://br0-mac-generator \
@@ -58,6 +58,7 @@ do_install() {
 
     # remove files for HW interfaces not present on Lime platforms
     if ${@bb.utils.contains('MACHINE', 'lime', 'true', 'false', d)}; then
+        rm -f ${D}/lib/systemd/network/eth3.network
         # rename specific file
         mv -f ${D}/lib/systemd/network/eth2-lime.network ${D}/lib/systemd/network/eth2.network
     else
