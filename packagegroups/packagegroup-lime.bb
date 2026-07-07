@@ -1,11 +1,12 @@
-SUMMARY = "Set of Charge SOM distribution packages"
+SUMMARY = "Set of Lime distribution packages"
 LICENSE = "CLOSED"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 inherit packagegroup
 
-# we inherite from chargesom platform so far
+# we inherite mainly from chargesom platform so far
 RDEPENDS:${PN} = " \
     packagegroup-chargesom \
+    modemmanager \
 "
