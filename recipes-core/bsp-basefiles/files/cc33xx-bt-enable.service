@@ -11,7 +11,7 @@ ConditionPathExists=/sys/module/cc33xx
 
 [Service]
 Type=oneshot
-ExecStart=/bin/sh -c 'echo "1" > /sys/kernel/debug/ieee80211/phy0/cc33xx/ble_enable'
+ExecStart=/bin/sh -c 'while [ ! -e /sys/kernel/debug/ieee80211/phy0/cc33xx/ble_enable ]; do sleep 1; done; echo "1" > /sys/kernel/debug/ieee80211/phy0/cc33xx/ble_enable'
 
 [Install]
 WantedBy=multi-user.target
