@@ -53,5 +53,6 @@ RDEPENDS:${PN} = " \
     systemd-analyze \
     tmux \
     ${@bb.utils.contains("MACHINE", "chargesom", "tulum-utils-bash-completion", "", d)} \
+    usbutils \
     vim \
 "
