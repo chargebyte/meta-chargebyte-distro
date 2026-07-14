@@ -9,4 +9,5 @@ inherit packagegroup
 RDEPENDS:${PN} = " \
     packagegroup-chargesom \
     modemmanager \
+    ppp \
 "
