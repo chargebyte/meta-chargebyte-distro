@@ -13,7 +13,7 @@ RDEPENDS:${PN} = " \
     cmake \
     ${@bb.utils.contains("TUNE_FEATURES", "armv5", "", "cpuburn-arm", d)} \
     dtc \
-    ${@bb.utils.contains("MACHINE", "chargesom", "fbida", "", d)} \
+    ${@bb.utils.contains_any("MACHINE", "chargesom lime", "fbida", "", d)} \
     fio \
     flex \
     fping \
