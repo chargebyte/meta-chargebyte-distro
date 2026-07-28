@@ -1,9 +1,5 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += " \
-    file://0001-cgroup-downgrade-warning-if-we-can-t-get-ID-off-cgro.patch \
-"
-
 PACKAGECONFIG:remove = " acl backlight binfmt hibernate ima machined polkit portabled smack sysusers vconsole nss-mymachines userdb utmp"
 PACKAGECONFIG:append = " iptc polkit_hostnamed_fallback"
 
