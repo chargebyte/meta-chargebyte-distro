@@ -28,8 +28,8 @@ SRC_URI = " \
 "
 
 do_install() {
-    install -d ${D}/sbin
-    install -o root -g root -m 0755 ${UNPACKDIR}/init ${D}/sbin/init
+    install -d ${D}${base_sbindir}
+    install -o root -g root -m 0755 ${UNPACKDIR}/init ${D}${base_sbindir}/init
 
     install -d ${D}/etc
     install -o root -g root -m 0644 ${UNPACKDIR}/device_info         ${D}/etc
