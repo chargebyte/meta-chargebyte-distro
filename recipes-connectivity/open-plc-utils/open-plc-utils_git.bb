@@ -8,12 +8,16 @@ PV = "0.0.6+git${SRCPV}"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
+# tools/types.h defines its own bool as `enum { false, true }` for compilers
+# without <stdbool.h>. GCC 15's new default standard (gnu23) makes bool/
+# true/false language keywords, so that enum no longer compiles. Pin the
+# older standard instead of patching every such definition upstream.
 do_compile() {
     make \
         CROSS="${TARGET_PREFIX}" \
         CC="${CC}" \
         LD="${LD}" \
-        EXTRA_CFLAGS="${TARGET_CPPFLAGS} ${TARGET_CFLAGS}" \
+        EXTRA_CFLAGS="${TARGET_CPPFLAGS} ${TARGET_CFLAGS} -std=gnu17" \
         LDFLAGS="${TARGET_CFLAGS} ${TARGET_LDFLAGS}"
 }
 
