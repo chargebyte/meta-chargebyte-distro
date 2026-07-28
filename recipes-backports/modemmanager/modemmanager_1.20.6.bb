@@ -15,7 +15,6 @@ DEPENDS = "glib-2.0 libgudev libxslt-native dbus"
 SRCREV = "6aa0ff583d04aea88b4da7a1c20049f57062dab6"
 SRC_URI = "git://gitlab.freedesktop.org/mobile-broadband/ModemManager.git;protocol=https;branch=mm-1-20"
 
-S = "${WORKDIR}/git"
 
 # strict, permissive
 MODEMMANAGER_POLKIT_TYPE ??= "permissive"

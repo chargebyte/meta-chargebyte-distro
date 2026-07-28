@@ -5,7 +5,6 @@ SRC_URI = "git://github.com/qca/open-plc-utils.git;protocol=https;branch=master"
 
 SRCREV = "1ba7d5a042e4e8ff6858b08e113eec5dc4e89cf2"
 PV = "0.0.6+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 

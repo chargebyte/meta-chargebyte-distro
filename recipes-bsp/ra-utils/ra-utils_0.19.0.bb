@@ -10,7 +10,6 @@ SRCREV = "23740e96ec4b2c166e55842dcd8f38d1873181d9"
 PV = "0.19.0+git${SRCPV}"
 
 SRC_URI = "git://github.com/chargebyte/ra-utils.git;protocol=https;branch=main"
-S = "${WORKDIR}/git"
 
 inherit cmake pkgconfig systemd
 
