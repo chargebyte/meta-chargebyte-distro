@@ -3,6 +3,8 @@ From: Michael Heimpold <michael.heimpold@chargebyte.com>
 Date: Thu, 28 May 2026 16:25:40 +0200
 Subject: [PATCH] Don't install wpa_supplicant@.service
 
+Upstream-Status: Inappropriate [chargebyte specific configuration]
+
 This causes timeouts during boot, we better use udev rules to
 trigger loading/starting of these units.
 

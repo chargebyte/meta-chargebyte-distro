@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [oe-core specific configuration]
+
 Index: avahi-0.7/avahi-daemon/avahi-daemon.service.in
 ===================================================================
 --- avahi-0.7.orig/avahi-daemon/avahi-daemon.service.in

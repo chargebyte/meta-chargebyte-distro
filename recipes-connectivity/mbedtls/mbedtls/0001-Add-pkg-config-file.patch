@@ -3,6 +3,8 @@ From: Michael Heimpold <mhei@heimpold.de>
 Date: Tue, 4 Sep 2018 01:41:57 +0200
 Subject: [PATCH] Add pkg-config file
 
+Upstream-Status: Pending
+
 pkg-config is a well-known method on Unix systems to find library
 headers and linker parameters to link against a library.
 

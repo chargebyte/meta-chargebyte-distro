@@ -3,6 +3,8 @@ From: Michael Heimpold <mhei@heimpold.de>
 Date: Fri, 18 Apr 2025 21:54:48 +0200
 Subject: [PATCH] Add support for libmodbus's local echo suppression
 
+Upstream-Status: Pending
+
 The feature was initially announced here:
 https://github.com/stephane/libmodbus/pull/432
 

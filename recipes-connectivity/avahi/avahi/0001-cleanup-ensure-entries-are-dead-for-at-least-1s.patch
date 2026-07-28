@@ -3,6 +3,8 @@ From: Trent Lloyd <trent@lloyd.id.au>
 Date: Wed, 12 Feb 2020 16:24:45 +0800
 Subject: [PATCH] cleanup: ensure entries are dead for at least 1s
 
+Upstream-Status: Backport
+
 If a dead AvahiEntry cleanup is scheduled, and we try to schedule
 another one, defer the existing callback by 1s. Also remove other calls
 to avahi_cleanup_dead_entries.
