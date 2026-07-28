@@ -12,12 +12,18 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 # without <stdbool.h>. GCC 15's new default standard (gnu23) makes bool/
 # true/false language keywords, so that enum no longer compiles. Pin the
 # older standard instead of patching every such definition upstream.
+#
+# -std=gnu17 is baked into CC itself, not just EXTRA_CFLAGS: some binary
+# targets (e.g. pib/Makefile's "modpib") list a .c file directly as a link
+# prerequisite instead of precompiling it via the -c pattern rule, so GCC
+# compiles it implicitly using only the link line's flags -- EXTRA_CFLAGS
+# never reaches that invocation, but anything embedded in $(CC) does.
 do_compile() {
     make \
         CROSS="${TARGET_PREFIX}" \
-        CC="${CC}" \
+        CC="${CC} -std=gnu17" \
         LD="${LD}" \
-        EXTRA_CFLAGS="${TARGET_CPPFLAGS} ${TARGET_CFLAGS} -std=gnu17" \
+        EXTRA_CFLAGS="${TARGET_CPPFLAGS} ${TARGET_CFLAGS}" \
         LDFLAGS="${TARGET_CFLAGS} ${TARGET_LDFLAGS}"
 }
 
