@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [chargebyte specific configuration]
+
 --- a/mini-snmpd.service.in
 +++ b/mini-snmpd.service.in
 @@ -5,9 +5,12 @@

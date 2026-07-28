@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [chargebyte specific configuration]
+
 --- /prog/pwm/fancontrol.orig
 +++ /prog/pwm/fancontrol
 @@ -398,9 +398,12 @@
