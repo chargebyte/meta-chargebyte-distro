@@ -3,6 +3,8 @@ From: Moritz Barsnick <barsnick@gmx.net>
 Date: Thu, 19 Sep 2024 12:47:50 +0200
 Subject: [PATCH] Makefile.am: Fix build without pandoc
 
+Upstream-Status: Pending
+
 When building from a tarball, pre-created man pages are preset. Yet `make
 clean` clobbers them, leaving their target directory intact. Therefore, the
 next configure call will try to build man pages even if pandoc isn't

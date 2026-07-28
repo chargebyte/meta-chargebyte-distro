@@ -3,6 +3,8 @@ From: Michael Heimpold <mhei@heimpold.de>
 Date: Wed, 28 Feb 2024 22:17:51 +0100
 Subject: [PATCH] Add possibility to obtain local/used client IP address
 
+Upstream-Status: Pending
+
 Signed-off-by: Michael Heimpold <mhei@heimpold.de>
 ---
  include/rpc/client.h |  3 +++

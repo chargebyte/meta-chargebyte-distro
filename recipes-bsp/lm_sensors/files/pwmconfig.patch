@@ -1,3 +1,5 @@
+Upstream-Status: Inappropriate [chargebyte specific configuration]
+
 --- /prog/pwm/pwmconfig.orig
 +++ /prog/pwm/pwmconfig
 @@ -157,6 +157,14 @@
