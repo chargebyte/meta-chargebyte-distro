@@ -16,8 +16,8 @@ do_install() {
     install -d ${D}/usr/libexec
     install -o root -g root -m 0755 ${UNPACKDIR}/cc-qca-fixup.sh ${D}/usr/libexec/
 
-    install -d ${D}/lib/udev/rules.d
-    install -o root -g root -m 0644 ${UNPACKDIR}/84-cc-qca-fixup.rules ${D}/lib/udev/rules.d/
+    install -d ${D}${nonarch_base_libdir}/udev/rules.d
+    install -o root -g root -m 0644 ${UNPACKDIR}/84-cc-qca-fixup.rules ${D}${nonarch_base_libdir}/udev/rules.d/
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
 

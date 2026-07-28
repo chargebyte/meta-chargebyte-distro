@@ -18,8 +18,8 @@ SRC_URI = " \
 "
 
 do_install() {
-    install -d ${D}/lib/udev/rules.d
-    install -o root -g root -m 0644 ${UNPACKDIR}/90-usb-gadget.rules ${D}/lib/udev/rules.d
+    install -d ${D}${nonarch_base_libdir}/udev/rules.d
+    install -o root -g root -m 0644 ${UNPACKDIR}/90-usb-gadget.rules ${D}${nonarch_base_libdir}/udev/rules.d
 
     install -d ${D}/usr/libexec
     install -o root -g root -m 0755 ${UNPACKDIR}/usb-gadget.sh ${D}/usr/libexec
