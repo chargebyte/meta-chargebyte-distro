@@ -29,34 +29,34 @@ SRC_URI = " \
 
 do_install() {
     install -d ${D}/sbin
-    install -o root -g root -m 0755 ${WORKDIR}/init ${D}/sbin/init
+    install -o root -g root -m 0755 ${UNPACKDIR}/init ${D}/sbin/init
 
     install -d ${D}/etc
-    install -o root -g root -m 0644 ${WORKDIR}/device_info         ${D}/etc
-    install -o root -g root -m 0644 ${WORKDIR}/baptism-data.config ${D}/etc
-    install -o root -g root -m 0755 ${WORKDIR}/rc.local            ${D}/etc
+    install -o root -g root -m 0644 ${UNPACKDIR}/device_info         ${D}/etc
+    install -o root -g root -m 0644 ${UNPACKDIR}/baptism-data.config ${D}/etc
+    install -o root -g root -m 0755 ${UNPACKDIR}/rc.local            ${D}/etc
 
     install -d ${D}/etc/usb-mount.d
     install -o root -g root -m 0755 ${WORKDIR}/usb-mount.d/* ${D}/etc/usb-mount.d/
 
     install -d ${D}/usr/sbin
-    install -o root -g root -m 0755 ${WORKDIR}/usb-mount.sh ${D}/usr/sbin/
-    install -o root -g root -m 0755 ${WORKDIR}/mount-other-rootfs ${D}/usr/sbin/
+    install -o root -g root -m 0755 ${UNPACKDIR}/usb-mount.sh ${D}/usr/sbin/
+    install -o root -g root -m 0755 ${UNPACKDIR}/mount-other-rootfs ${D}/usr/sbin/
 
     install -d ${D}/lib
-    install -o root -g root -m 0644 ${WORKDIR}/led.sh ${D}/lib/
-    install -o root -g root -m 0644 ${WORKDIR}/rauc-helper.sh ${D}/lib/
+    install -o root -g root -m 0644 ${UNPACKDIR}/led.sh ${D}/lib/
+    install -o root -g root -m 0644 ${UNPACKDIR}/rauc-helper.sh ${D}/lib/
 
     install -d ${D}/usr/libexec
-    install -o root -g root -m 0755 ${WORKDIR}/led-boot-notification.sh ${D}/usr/libexec
+    install -o root -g root -m 0755 ${UNPACKDIR}/led-boot-notification.sh ${D}/usr/libexec
 
     install -d ${D}/lib/init
     install -d ${D}/etc/rc.once.d
-    install -o root -g root -m 0755 ${WORKDIR}/rc-once.sh ${D}/lib/init/
+    install -o root -g root -m 0755 ${UNPACKDIR}/rc-once.sh ${D}/lib/init/
 
     install -d ${D}/lib/systemd/system
-    install -o root -g root -m 0644 ${WORKDIR}/led-boot-notification.service ${D}/lib/systemd/system
-    install -o root -g root -m 0644 ${WORKDIR}/cc33xx-bt-enable.service ${D}/lib/systemd/system
+    install -o root -g root -m 0644 ${UNPACKDIR}/led-boot-notification.service ${D}/lib/systemd/system
+    install -o root -g root -m 0644 ${UNPACKDIR}/cc33xx-bt-enable.service ${D}/lib/systemd/system
 
     install -d ${D}/lib/udev/rules.d
     install -o root -g root -m 0644 ${WORKDIR}/udev/* ${D}/lib/udev/rules.d/

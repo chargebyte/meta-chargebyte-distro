@@ -19,19 +19,19 @@ SRC_URI = " \
 
 do_install() {
     install -d ${D}/lib/udev/rules.d
-    install -o root -g root -m 0644 ${WORKDIR}/90-usb-gadget.rules ${D}/lib/udev/rules.d
+    install -o root -g root -m 0644 ${UNPACKDIR}/90-usb-gadget.rules ${D}/lib/udev/rules.d
 
     install -d ${D}/usr/libexec
-    install -o root -g root -m 0755 ${WORKDIR}/usb-gadget.sh ${D}/usr/libexec
+    install -o root -g root -m 0755 ${UNPACKDIR}/usb-gadget.sh ${D}/usr/libexec
 
     install -d ${D}${systemd_system_unitdir}
-    install -o root -g root -m 0644 ${WORKDIR}/usb-gadget@.service ${D}${systemd_system_unitdir}
+    install -o root -g root -m 0644 ${UNPACKDIR}/usb-gadget@.service ${D}${systemd_system_unitdir}
 
     install -d ${D}${systemd_system_unitdir}/getty.target.wants
     ln -s ../serial-getty@.service ${D}${systemd_system_unitdir}/getty.target.wants/serial-getty@ttyGS0.service
 
     install -d ${D}${systemd_unitdir}/network
-    install -o root -g root -m 0644 ${WORKDIR}/usb-gadget.network ${D}${systemd_unitdir}/network
+    install -o root -g root -m 0644 ${UNPACKDIR}/usb-gadget.network ${D}${systemd_unitdir}/network
 }
 
 FILES:${PN} = "/"

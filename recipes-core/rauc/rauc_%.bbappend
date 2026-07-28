@@ -19,19 +19,19 @@ SRC_URI += " \
 do_install:append() {
     install -d ${D}/usr/lib/rauc
     install -d ${D}${sysconfdir}/rauc
-    install -m 0644 ${WORKDIR}/i2se-devel.crt   ${D}${sysconfdir}/rauc/
-    install -m 0644 ${WORKDIR}/i2se-release.crt ${D}${sysconfdir}/rauc/
+    install -m 0644 ${UNPACKDIR}/i2se-devel.crt   ${D}${sysconfdir}/rauc/
+    install -m 0644 ${UNPACKDIR}/i2se-release.crt ${D}${sysconfdir}/rauc/
     ln -sf i2se-release.crt ${D}${sysconfdir}/rauc/keyring.pem
 
     install -d ${D}/usr/lib/rauc
-    install -o root -g root -m 0755 ${WORKDIR}/pre-install.sh  ${D}/usr/lib/rauc/
-    install -o root -g root -m 0755 ${WORKDIR}/post-install.sh ${D}/usr/lib/rauc/
-    install -o root -g root -m 0755 ${WORKDIR}/system-info.sh  ${D}/usr/lib/rauc/
+    install -o root -g root -m 0755 ${UNPACKDIR}/pre-install.sh  ${D}/usr/lib/rauc/
+    install -o root -g root -m 0755 ${UNPACKDIR}/post-install.sh ${D}/usr/lib/rauc/
+    install -o root -g root -m 0755 ${UNPACKDIR}/system-info.sh  ${D}/usr/lib/rauc/
 
     # Configure rauc.service to use /srv/rauc-tmp/ as temporary directory for downloads
     # and cleanup the directory before the rauc service starts.
     install -d ${D}${systemd_system_unitdir}/rauc.service.d/
-    install -m 0644 ${WORKDIR}/01-rauc-tmpdir-configuration.conf ${D}${systemd_system_unitdir}/rauc.service.d/
+    install -m 0644 ${UNPACKDIR}/01-rauc-tmpdir-configuration.conf ${D}${systemd_system_unitdir}/rauc.service.d/
 }
 
 FILES:${PN} += " \

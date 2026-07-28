@@ -19,15 +19,15 @@ RDEPENDS:${PN} += "tulum-utils"
 
 do_install() {
     install -d ${D}/usr/libexec
-    install -o root -g root -m 0755 ${WORKDIR}/mse-nmk-store-fixup.sh ${D}/usr/libexec/
+    install -o root -g root -m 0755 ${UNPACKDIR}/mse-nmk-store-fixup.sh ${D}/usr/libexec/
 
     install -d ${D}/lib/udev/rules.d
-    install -o root -g root -m 0644 ${WORKDIR}/84-mse-nmk-store-fixup.rules ${D}/lib/udev/rules.d/
+    install -o root -g root -m 0644 ${UNPACKDIR}/84-mse-nmk-store-fixup.rules ${D}/lib/udev/rules.d/
 
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
 
         install -d ${D}${systemd_system_unitdir}/
-        install -m 0644 ${WORKDIR}/mse-nmk-store-fixup@.service ${D}${systemd_system_unitdir}/
+        install -m 0644 ${UNPACKDIR}/mse-nmk-store-fixup@.service ${D}${systemd_system_unitdir}/
 
         sed -i -e 's,@BASE_BINDIR@,${base_bindir},g' \
                -e 's,@BINDIR@,${bindir},g' \

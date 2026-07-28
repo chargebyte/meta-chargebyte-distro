@@ -26,11 +26,11 @@ SRC_URI = " \
 
 do_install() {
     install -d ${D}/lib/systemd/network
-    install -o root -g root -m 0644 ${WORKDIR}/*.net* ${D}/lib/systemd/network
+    install -o root -g root -m 0644 ${UNPACKDIR}/*.net* ${D}/lib/systemd/network
 
     # install a workaround to set MAC address of br0 interface to eth0 one's
     install -d ${D}/lib/systemd/system-generators
-    install -o root -g root -m 0755 ${WORKDIR}/br0-mac-generator ${D}/lib/systemd/system-generators/
+    install -o root -g root -m 0755 ${UNPACKDIR}/br0-mac-generator ${D}/lib/systemd/system-generators/
 
     # remove files for HW interfaces not present on Tarragon
     if ${@bb.utils.contains('MACHINE', 'tarragon', 'true', 'false', d)}; then
@@ -84,7 +84,7 @@ do_install() {
         rm -f ${D}/lib/systemd/system-generators/br0-mac-generator
         # install PLCA config udev rule
         install -d ${D}/lib/udev/rules.d
-        install -o root -g root -m 0644 ${WORKDIR}/99-eth1-plca-config.rules ${D}/lib/udev/rules.d/
+        install -o root -g root -m 0644 ${UNPACKDIR}/99-eth1-plca-config.rules ${D}/lib/udev/rules.d/
     else
         # delete parsley specific files for all other platforms
         rm -f ${D}/lib/systemd/network/*parsley*

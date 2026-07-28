@@ -16,7 +16,7 @@ do_install:append() {
     if ${@bb.utils.contains('DISTRO_FEATURES', 'systemd', 'true', 'false', d)}; then
 
         install -d ${D}${systemd_system_unitdir}
-        install -m 0644 ${WORKDIR}/update-ca-certificates.service ${D}${systemd_system_unitdir}/
+        install -m 0644 ${UNPACKDIR}/update-ca-certificates.service ${D}${systemd_system_unitdir}/
 
         sed -i -e 's,@BASE_BINDIR@,${base_bindir},g' \
                -e 's,@BINDIR@,${bindir},g' \
