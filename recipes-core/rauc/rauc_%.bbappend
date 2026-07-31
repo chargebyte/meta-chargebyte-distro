@@ -28,6 +28,11 @@ do_install:append() {
     install -o root -g root -m 0755 ${UNPACKDIR}/post-install.sh ${D}/usr/lib/rauc/
     install -o root -g root -m 0755 ${UNPACKDIR}/system-info.sh  ${D}/usr/lib/rauc/
 
+    # rauc's own meson build installs its commented-out example system.conf
+    # to this same path. Overwrite it with our machine-specific one, otherwise
+    # rauc.service fails to start: "Key file does not have group 'system'".
+    install -m 0644 ${UNPACKDIR}/system.conf ${D}/usr/lib/rauc/system.conf
+
     # Configure rauc.service to use /srv/rauc-tmp/ as temporary directory for downloads
     # and cleanup the directory before the rauc service starts.
     install -d ${D}${systemd_system_unitdir}/rauc.service.d/
