@@ -1,11 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI += " \
-    file://system.conf \
     file://01-rauc-tmpdir-configuration.conf \
 "
-
-RAUC_KEYRING_FILE = "keyring.pem"
 
 SRC_URI += " \
     file://pre-install.sh \
@@ -27,11 +24,6 @@ do_install:append() {
     install -o root -g root -m 0755 ${UNPACKDIR}/pre-install.sh  ${D}/usr/lib/rauc/
     install -o root -g root -m 0755 ${UNPACKDIR}/post-install.sh ${D}/usr/lib/rauc/
     install -o root -g root -m 0755 ${UNPACKDIR}/system-info.sh  ${D}/usr/lib/rauc/
-
-    # rauc's own meson build installs its commented-out example system.conf
-    # to this same path. Overwrite it with our machine-specific one, otherwise
-    # rauc.service fails to start: "Key file does not have group 'system'".
-    install -m 0644 ${UNPACKDIR}/system.conf ${D}/usr/lib/rauc/system.conf
 
     # Configure rauc.service to use /srv/rauc-tmp/ as temporary directory for downloads
     # and cleanup the directory before the rauc service starts.
