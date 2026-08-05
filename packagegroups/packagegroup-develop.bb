@@ -42,6 +42,7 @@ RDEPENDS:${PN} = " \
     python3-pyserial \
     python3-shell \
     python3-usbtmc \
+    rs485conf \
     rs485test \
     rpclib \
     screen \
