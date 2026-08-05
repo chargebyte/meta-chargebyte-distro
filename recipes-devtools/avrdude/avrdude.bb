@@ -1,0 +1,28 @@
+SUMMARY = "AVRDUDE - AVR Downloader/UploaDEr"
+HOMEPAGE = "https://www.nongnu.org/avrdude/"
+SECTION = "devel"
+LICENSE = "GPL-2.0-or-later"
+
+LIC_FILES_CHKSUM = "file://COPYING;md5=4f51bb496ef8872ccff73f440f2464a8"
+
+SRC_URI = "git://github.com/avrdudes/avrdude.git;protocol=https;branch=main"
+SRCREV = "4c92030e3a486cfbaeb36e298f6f2929e8e031eb"
+S = "${WORKDIR}/git"
+PV = "7.0+git${SRCPV}"
+
+inherit cmake gettext
+
+DEPENDS = " \
+    bison-native \
+    flex \
+    elfutils \
+    readline \
+"
+
+EXTRA_OECMAKE = " \
+    -DBUILD_DOC=OFF \
+    -DHAVE_LINUXGPIO=ON \
+    -DHAVE_LINUXSPI=ON \
+    -DHAVE_PARPORT=OFF \
+    -DBUILD_SHARED_LIBS=ON \
+"
