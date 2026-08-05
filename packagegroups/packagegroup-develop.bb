@@ -7,6 +7,7 @@ inherit packagegroup
 
 RDEPENDS:${PN} = " \
     autoconf-archive \
+    ${@bb.utils.contains_any("MACHINE", "lime", "avrdude", "", d)} \
     bison \
     can-utils \
     can-utils-essentials \
