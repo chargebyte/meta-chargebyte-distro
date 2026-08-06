@@ -4,7 +4,7 @@ After=network.target
 Wants=network.target
 
 [Service]
-type=simple
+Type=simple
 ExecStart=/usr/sbin/bd-mdns -s -S 'chargebox_serial,serial,serial#'
 
 [Install]
