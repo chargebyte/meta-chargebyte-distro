@@ -19,6 +19,15 @@ PACKAGES =+ "${PN}-fw-chargesom ${PN}-fw-parsley"
 
 SYSTEMD_SERVICE:${PN} = "ra-update@ttyLP1.service ra-update@ttyLP2.service"
 
+do_install:append() {
+    # upstream's firmware/CMakeLists.txt hardcodes the pre-usrmerge
+    # /lib/systemd/system path; relocate to the usrmerge location so
+    # systemd.bbclass can find the template unit and its instance drop-ins.
+    install -d -m 0755 ${D}${systemd_system_unitdir}
+    mv ${D}/lib/systemd/system/* ${D}${systemd_system_unitdir}/
+    rm -rf ${D}/lib
+}
+
 FILES:${PN} += "${datadir}"
 FILES:${PN} += "${systemd_system_unitdir}"
 
