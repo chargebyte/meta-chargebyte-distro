@@ -1,11 +1,8 @@
 [Unit]
 Description=Announce SSH server via mDNS
-After=network.target
-Wants=network.target
+BindsTo=sshd.socket
+After=sshd.socket avahi-daemon.service
 
 [Service]
 Type=simple
 ExecStart=/usr/sbin/bd-mdns -s -S 'chargebox_serial,serial,serial#'
-
-[Install]
-WantedBy=multi-user.target
