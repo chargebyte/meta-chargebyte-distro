@@ -10,6 +10,7 @@ RDEPENDS:${PN} = " \
     kernel-devicetree \
     kernel-modules \
     ${MACHINE_FIRMWARE} \
+    curl \
     openssh \
     openssh-sftp-server \
     ethtool \
