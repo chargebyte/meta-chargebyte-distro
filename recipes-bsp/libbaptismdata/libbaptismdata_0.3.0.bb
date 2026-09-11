@@ -12,7 +12,7 @@ SRC_URI = "https://github.com/mhei/${BPN}/releases/download/v${PV}/${BPN}-${PV}.
     file://bd-mdns-ssh.service \
     file://bd-mdns-ssh.conf \
 "
-SRC_URI[sha256sum] = "f1be8557abff1fa390f15d78e3833a77a7576ed28b9de9ffaef338b713f56bcb"
+SRC_URI[sha256sum] = "8ecc1617800e20e5dbde50fb90c3c9a7b52b2e5acd46378413a4c83182b5e406"
 
 inherit autotools pkgconfig systemd
 

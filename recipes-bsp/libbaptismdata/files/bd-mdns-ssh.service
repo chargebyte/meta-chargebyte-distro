@@ -6,3 +6,5 @@ After=sshd.socket avahi-daemon.service
 [Service]
 Type=simple
 ExecStart=/usr/sbin/bd-mdns -s -S 'chargebox_serial,serial,serial#'
+# when device is not baptized yet the exit code is 10, then restart makes no sense
+RestartPreventExitStatus=10
