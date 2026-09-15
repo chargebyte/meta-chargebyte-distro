@@ -1,0 +1,7 @@
+[Unit]
+Description=Configure PLCA on %i
+After=sys-subsystem-net-devices-%i.device
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ethtool --set-plca-cfg %i enable on node-id 0 node-cnt 8 to-tmr 0x20 burst-cnt 0x0 burst-tmr 0x80
