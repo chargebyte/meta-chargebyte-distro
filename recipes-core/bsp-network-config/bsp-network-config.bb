@@ -85,7 +85,7 @@ do_install() {
         rm -f ${D}/lib/systemd/system-generators/br0-mac-generator
         # install PLCA config udev rule...
         install -d ${D}/lib/udev/rules.d
-        install -o root -g root -m 0644 ${WORKDIR}/99-eth1-plca-config.rules ${D}/lib/udev/rules.d/
+        install -o root -g root -m 0644 ${WORKDIR}/99-eth-plca-config.rules ${D}/lib/udev/rules.d/
         # ...and related service
         install -d ${D}${systemd_system_unitdir}
         install -o root -g root -m 0644 ${WORKDIR}/eth-plca-config@.service ${D}${systemd_system_unitdir}/
