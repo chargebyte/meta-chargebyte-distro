@@ -1,6 +1,6 @@
 LICENSE = "CLOSED"
 
-inherit allarch
+PACKAGE_ARCH = "${MACHINE_ARCH}"
 
 PV = "16"
 
