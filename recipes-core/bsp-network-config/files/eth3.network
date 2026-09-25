@@ -1,6 +1,6 @@
 [Match]
 Name=eth3
-driver=smsc95xx
+Driver=smsc95xx
 
 [Link]
 RequiredForOnline=no
