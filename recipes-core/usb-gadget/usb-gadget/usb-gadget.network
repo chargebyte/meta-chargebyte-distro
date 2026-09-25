@@ -21,4 +21,5 @@ DHCPPrefixDelegation=yes
 [DHCPServer]
 DefaultLeaseTimeSec=1h
 MaxLeaseTimeSec=1h
-PersistLeases=runtime
+# not available yet: requires systemd >= v256
+# PersistLeases=runtime

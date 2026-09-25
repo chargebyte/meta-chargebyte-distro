@@ -6,7 +6,7 @@ LIC_FILES_CHKSUM = "file://${COREBASE}/meta/COPYING.MIT;md5=3da9cfbcb788c80a0384
 
 inherit allarch systemd
 
-PV = "2"
+PV = "3"
 
 RDEPENDS:${PN} += "libbaptismdata maccalc"
 
