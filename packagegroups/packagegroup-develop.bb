@@ -43,6 +43,7 @@ RDEPENDS:${PN} = " \
     python3-pyserial \
     python3-shell \
     python3-usbtmc \
+    ${@bb.utils.contains_any("MACHINE", "chargesom lime parsley", "ra-utils-bash-completion", "", d)} \
     rs485conf \
     rs485test \
     rpclib \
