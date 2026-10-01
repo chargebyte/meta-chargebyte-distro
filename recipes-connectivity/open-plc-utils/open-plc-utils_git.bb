@@ -3,7 +3,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=7d83a9e9a9788beb9357262af385f6c7"
 
 SRC_URI = "git://github.com/qca/open-plc-utils.git;protocol=https;branch=master"
 
-SRCREV = "1ba7d5a042e4e8ff6858b08e113eec5dc4e89cf2"
+SRCREV = "5e0295719d70058221273ac0e780fcd82e28ea0f"
 PV = "0.0.6+git${SRCPV}"
 S = "${WORKDIR}/git"
 
