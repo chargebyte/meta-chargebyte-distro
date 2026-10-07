@@ -4,3 +4,6 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 # package machine-specific because FILESPATH selects a different configuration
 # for each supported machine.
 PACKAGE_ARCH = "${MACHINE_ARCH}"
+
+# Ship our keyring instead of meta-rauc's dummy ca.cert.pem
+RAUC_KEYRING_FILE = "keyring.pem"
