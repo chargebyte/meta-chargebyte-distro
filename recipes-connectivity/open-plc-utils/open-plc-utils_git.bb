@@ -5,15 +5,13 @@ SRC_URI = "git://github.com/qca/open-plc-utils.git;protocol=https;branch=master"
 
 SRCREV = "5e0295719d70058221273ac0e780fcd82e28ea0f"
 PV = "0.0.6+git${SRCPV}"
-S = "${WORKDIR}/git"
-
-INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 
 do_compile() {
     make \
         CROSS="${TARGET_PREFIX}" \
         CC="${CC}" \
         LD="${LD}" \
+        STRIP="" \
         EXTRA_CFLAGS="${TARGET_CPPFLAGS} ${TARGET_CFLAGS}" \
         LDFLAGS="${TARGET_CFLAGS} ${TARGET_LDFLAGS}"
 }
