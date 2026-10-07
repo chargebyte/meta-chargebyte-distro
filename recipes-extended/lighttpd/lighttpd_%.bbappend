@@ -6,14 +6,14 @@ PACKAGECONFIG:append = " lua"
 
 do_install:append() {
     # install mimetype mappings
-    install -m 644 ${WORKDIR}/10-mime-types.conf ${D}${sysconfdir}/lighttpd/10-mime-types.conf
+    install -m 644 ${UNPACKDIR}/10-mime-types.conf ${D}${sysconfdir}/lighttpd/10-mime-types.conf
 
     # create empty /www folder, removing Yocto upstream's defaults
     rm -rf ${D}/www
     install -d ${D}/www
 
     # MQTT configuration
-    install -m 644 ${WORKDIR}/20-mqtt.conf ${D}${sysconfdir}/lighttpd/20-mqtt.conf
+    install -m 644 ${UNPACKDIR}/20-mqtt.conf ${D}${sysconfdir}/lighttpd/20-mqtt.conf
 
     # directories as specified in our lighttpd.conf, with our user permissions
     install -d -m 0755 -o root     -g root     ${D}/${localstatedir}/cache/lighttpd
@@ -21,10 +21,10 @@ do_install:append() {
     install -d -m 0750 -o www-data -g www-data ${D}/${localstatedir}/cache/lighttpd/compress
 
     # use our own service file
-    install -m 0644 ${WORKDIR}/lighttpd.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/lighttpd.service ${D}${systemd_system_unitdir}
 
     install -d ${D}${sysconfdir}/logrotate.d
-    install -m 0644 ${WORKDIR}/lighttpd.logrotate ${D}${sysconfdir}/logrotate.d/lighttpd
+    install -m 0644 ${UNPACKDIR}/lighttpd.logrotate ${D}${sysconfdir}/logrotate.d/lighttpd
 }
 
 FILES:${PN} += " \

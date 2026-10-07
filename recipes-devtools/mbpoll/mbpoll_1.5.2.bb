@@ -12,6 +12,5 @@ SRC_URI = "git://github.com/epsilonrt/mbpoll;protocol=https;branch=master \
            file://0001-Add-support-for-libmodbus-s-local-echo-suppression.patch"
 SRCREV = "a0bd6c08d3d15b086f2104477295c0705aed366a"
 
-S = "${WORKDIR}/git"
 
 inherit pkgconfig cmake

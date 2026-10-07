@@ -10,6 +10,5 @@ SRCREV = "9593ea5bceb5ac55618f9cea8a4deb2e363b0b63"
 PV = "0.2.0+git${SRCPV}"
 
 SRC_URI = "git://github.com/chargebyte/cb-eeprom-utils.git;protocol=https;branch=main"
-S = "${WORKDIR}/git"
 
 inherit cmake

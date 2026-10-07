@@ -22,7 +22,7 @@ SYSTEMD_AUTO_ENABLE ?= "disable"
 
 do_install:append() {
     install -m 0755 -d ${D}${sysconfdir}/default
-    install -m 0644 ${WORKDIR}/mini-snmpd ${D}${sysconfdir}/default/mini-snmpd
+    install -m 0644 ${UNPACKDIR}/mini-snmpd ${D}${sysconfdir}/default/mini-snmpd
     install -m 0755 -d ${D}${sbindir}/
-    install -m 0755 -t ${D}${sbindir} ${WORKDIR}/cc-mini-snmpd-env
+    install -m 0755 -t ${D}${sbindir} ${UNPACKDIR}/cc-mini-snmpd-env
 }

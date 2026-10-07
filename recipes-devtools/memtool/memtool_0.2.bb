@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://memtool.c;beginline=1;endline=12;md5=f2e470b1341efde8
 
 SRC_URI = "file://memtool.c"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_compile() {
     ${CC} ${LDFLAGS} memtool.c -o memtool
