@@ -7,7 +7,7 @@ SRC_URI = "file://wpa_supplicant-wlan0.conf"
 
 inherit allarch
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 RDEPENDS:${PN} += "wpa-supplicant"
 
@@ -17,5 +17,5 @@ CONFFILES:${PN} += "${sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf"
 
 do_install() {
 	install -d ${D}${sysconfdir}/wpa_supplicant
-	install -m 0600 ${WORKDIR}/wpa_supplicant-wlan0.conf ${D}${sysconfdir}/wpa_supplicant/
+	install -m 0600 ${UNPACKDIR}/wpa_supplicant-wlan0.conf ${D}${sysconfdir}/wpa_supplicant/
 }

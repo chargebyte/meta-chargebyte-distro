@@ -10,7 +10,7 @@ do_install:append() {
     # install systemd service file
     if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
         install -d -m 0755 ${D}${systemd_system_unitdir}
-        install -m 0644 ${WORKDIR}/fancontrol-hwinit.service ${D}${systemd_system_unitdir}
+        install -m 0644 ${UNPACKDIR}/fancontrol-hwinit.service ${D}${systemd_system_unitdir}
     fi
 }
 

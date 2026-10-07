@@ -29,24 +29,24 @@ RDEPENDS:${PN} += " \
 
 do_install() {
     install -d ${D}${sbindir}
-    install -m 0755 ${WORKDIR}/factory-reset ${D}${sbindir}/factory-reset
+    install -m 0755 ${UNPACKDIR}/factory-reset ${D}${sbindir}/factory-reset
 
     install -d ${D}${libexecdir}
-    install -m 0755 ${WORKDIR}/factory-reset-gpio-check ${D}${libexecdir}/factory-reset-gpio-check
+    install -m 0755 ${UNPACKDIR}/factory-reset-gpio-check ${D}${libexecdir}/factory-reset-gpio-check
 
     install -d ${D}${libexecdir}/factory-reset.d
-    install -m 0755 ${WORKDIR}/10_clear-root-pw ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/15_root-user-settings ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/20_clear-etc-systemd ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/20_ssh ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/20_wifi ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/30_ca-certificates ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/40_mosquitto ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/90_clear-journal ${D}${libexecdir}/factory-reset.d/
-    install -m 0755 ${WORKDIR}/99_reboot ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/10_clear-root-pw ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/15_root-user-settings ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/20_clear-etc-systemd ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/20_ssh ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/20_wifi ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/30_ca-certificates ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/40_mosquitto ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/90_clear-journal ${D}${libexecdir}/factory-reset.d/
+    install -m 0755 ${UNPACKDIR}/99_reboot ${D}${libexecdir}/factory-reset.d/
 
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/factory-reset.service ${D}${systemd_system_unitdir}/
+    install -m 0644 ${UNPACKDIR}/factory-reset.service ${D}${systemd_system_unitdir}/
 }
 
 FILES:${PN} += " \

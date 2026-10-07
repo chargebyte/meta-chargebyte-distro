@@ -17,17 +17,17 @@ do_install:append () {
 	# create config subdir
 	install -d ${D}${sysconfdir}/wpa_supplicant
 
-	install -d ${D}/lib/udev/rules.d
-	install -o root -g root -m 0644 ${WORKDIR}/99-wifi.rules ${D}/lib/udev/rules.d
+	install -d ${D}${nonarch_base_libdir}/udev/rules.d
+	install -o root -g root -m 0644 ${UNPACKDIR}/99-wifi.rules ${D}${nonarch_base_libdir}/udev/rules.d
 
 	# install config file condition and enable D-Bus control interface
 	if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
 		install -d ${D}/${systemd_system_unitdir}/wpa_supplicant@.service.d
-		install -m 644 ${WORKDIR}/10-cfg-present.conf ${D}/${systemd_system_unitdir}/wpa_supplicant@.service.d/
-		install -m 644 ${WORKDIR}/20-dbus.conf ${D}/${systemd_system_unitdir}/wpa_supplicant@.service.d/
+		install -m 644 ${UNPACKDIR}/10-cfg-present.conf ${D}/${systemd_system_unitdir}/wpa_supplicant@.service.d/
+		install -m 644 ${UNPACKDIR}/20-dbus.conf ${D}/${systemd_system_unitdir}/wpa_supplicant@.service.d/
 
 		# wpa_supplicant@wlan0 owns the D-Bus name once its config exists
 		install -d ${D}/${systemd_system_unitdir}/wpa_supplicant.service.d
-		install -m 644 ${WORKDIR}/10-wlan0-cfg-absent.conf ${D}/${systemd_system_unitdir}/wpa_supplicant.service.d/
+		install -m 644 ${UNPACKDIR}/10-wlan0-cfg-absent.conf ${D}/${systemd_system_unitdir}/wpa_supplicant.service.d/
 	fi
 }

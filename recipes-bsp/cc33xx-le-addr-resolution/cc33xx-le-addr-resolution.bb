@@ -15,7 +15,7 @@ SRC_URI = " \
     file://cc33xx-le-addr-resolution.service \
 "
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_compile() {
     ${CC} ${CFLAGS} ${LDFLAGS} -Wall -Wextra -o cc33xx-le-addr-resolution cc33xx-le-addr-resolution.c
@@ -26,7 +26,7 @@ do_install() {
     install -m 0755 cc33xx-le-addr-resolution ${D}${sbindir}/
 
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/cc33xx-le-addr-resolution.service ${D}${systemd_system_unitdir}/
+    install -m 0644 ${UNPACKDIR}/cc33xx-le-addr-resolution.service ${D}${systemd_system_unitdir}/
     sed -i -e 's,@SBINDIR@,${sbindir},g' ${D}${systemd_system_unitdir}/cc33xx-le-addr-resolution.service
 }
 

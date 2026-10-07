@@ -9,7 +9,7 @@ LIC_FILES_CHKSUM = "file://main.c;beginline=6;endline=8;md5=b96cea784b55f1ab01c0
 
 SRC_URI = "file://main.c"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 do_compile() {
     ${CC} ${CFLAGS} ${LDFLAGS} main.c -o maccalc

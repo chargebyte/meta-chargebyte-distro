@@ -4,7 +4,6 @@ LIC_FILES_CHKSUM = "file://LICENCE;md5=df68504cbd0a4da1643ebcfd5783dbc9"
 
 SRCREV = "bb83d23cde6e0f922c158b511e1dc4af9c957e60"
 SRC_URI = "git://git.ti.com/git/cc33xx-wlan/cc33xx-fw.git;protocol=https;branch=master"
-S = "${WORKDIR}/git"
 
 PV = "1.7.16.323"
 

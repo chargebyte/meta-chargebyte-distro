@@ -22,7 +22,7 @@ do_install() {
 addtask do_deploy after do_install
 
 do_deploy() {
-    cp -a --no-preserve=ownership ${WORKDIR}/${BPN}-${PV}/customerfs.tar.gz ${DEPLOY_DIR_IMAGE}
+    cp -a --no-preserve=ownership ${S}/customerfs.tar.gz ${DEPLOY_DIR_IMAGE}
 }
 
 do_clean:append() {

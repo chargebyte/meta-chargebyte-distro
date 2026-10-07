@@ -11,7 +11,6 @@ SRC_URI = "git://github.com/Vertexcom-dev/tulum_utils.git;protocol=https;branch=
 SRCREV = "678e9151b33bf266aabbd1ad6dfb708be73c3101"
 PV = "0.7+git${SRCPV}"
 
-S = "${WORKDIR}/git"
 
 DEPENDS = "openssl libpcap zlib"
 

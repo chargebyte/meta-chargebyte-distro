@@ -24,14 +24,11 @@ PACKAGECONFIG[https] = ",,,lighttpd-module-openssl"
 PACKAGECONFIG[logrotate] = ",,,logrotate"
 
 # Modules loaded unconditionally by the static configuration.
+# access, alias, redirect and rewrite are built into the lighttpd binary.
 RDEPENDS:${PN}:append = " \
-    lighttpd-module-access \
-    lighttpd-module-alias \
     lighttpd-module-auth \
     lighttpd-module-authn-file \
     lighttpd-module-proxy \
-    lighttpd-module-redirect \
-    lighttpd-module-rewrite \
     ${@bb.utils.contains('PACKAGECONFIG', 'logrotate', '', 'gzip', d)} \
 "
 SYSTEMD_SERVICE:${PN}:append = " ${@bb.utils.contains('PACKAGECONFIG', 'logrotate', '', 'lighttpd-logrotate.timer', d)}"
@@ -48,7 +45,7 @@ do_install:append() {
 
     # install mimetype mappings
     install -d ${D}${sysconfdir}/lighttpd/conf.d
-    install -m 0644 ${WORKDIR}/10-mime-types.conf ${D}${sysconfdir}/lighttpd/conf.d/
+    install -m 0644 ${UNPACKDIR}/10-mime-types.conf ${D}${sysconfdir}/lighttpd/conf.d/
 
     # create empty /www folder, removing Yocto upstream's defaults
     rm -rf ${D}/www
@@ -56,15 +53,15 @@ do_install:append() {
 
     # MQTT configuration
     if ${@bb.utils.contains('PACKAGECONFIG', 'mqtt', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/20-mqtt.conf ${D}${sysconfdir}/lighttpd/conf.d/
+        install -m 0644 ${UNPACKDIR}/20-mqtt.conf ${D}${sysconfdir}/lighttpd/conf.d/
     fi
 
     if ${@bb.utils.contains_any('PROJECT', 'truffle cardamom', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/30-truffle-cardamom.conf ${D}${sysconfdir}/lighttpd/conf.d/
+        install -m 0644 ${UNPACKDIR}/30-truffle-cardamom.conf ${D}${sysconfdir}/lighttpd/conf.d/
     fi
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'php-cgi', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/40-php-cgi.conf ${D}${sysconfdir}/lighttpd/conf.d/
+        install -m 0644 ${UNPACKDIR}/40-php-cgi.conf ${D}${sysconfdir}/lighttpd/conf.d/
         if ${@bb.utils.contains('PACKAGECONFIG', 'uploadprogress', 'true', 'false', d)}; then
             sed -i 's|/usr/bin/php-cgi"|/usr/bin/php-cgi -d upload_max_filesize=450M -d post_max_size=460M"|' \
                 ${D}${sysconfdir}/lighttpd/conf.d/40-php-cgi.conf
@@ -72,39 +69,39 @@ do_install:append() {
     fi
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'uploadprogress', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/50-uploadprogress.conf ${D}${sysconfdir}/lighttpd/conf.d/
+        install -m 0644 ${UNPACKDIR}/50-uploadprogress.conf ${D}${sysconfdir}/lighttpd/conf.d/
     fi
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'https', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/60-https.conf ${D}${sysconfdir}/lighttpd/conf.d/
+        install -m 0644 ${UNPACKDIR}/60-https.conf ${D}${sysconfdir}/lighttpd/conf.d/
         # lighttpd runs as www-data; file permissions protect the private key.
         install -d -m 0755 ${D}${sysconfdir}/lighttpd/certs
     fi
 
     # Create volatile log/cache directories at boot, for either rotation backend.
     install -d ${D}${nonarch_libdir}/tmpfiles.d
-    install -m 0644 ${WORKDIR}/lighttpd.tmpfiles ${D}${nonarch_libdir}/tmpfiles.d/lighttpd.conf
+    install -m 0644 ${UNPACKDIR}/lighttpd.tmpfiles ${D}${nonarch_libdir}/tmpfiles.d/lighttpd.conf
     sed -i -e 's,@LOCALSTATEDIR@,${localstatedir},g' \
         ${D}${nonarch_libdir}/tmpfiles.d/lighttpd.conf
 
     install -d ${D}${libexecdir}/factory-reset.d
-    install -m 0755 ${WORKDIR}/factory-reset ${D}${libexecdir}/factory-reset.d/40_lighttpd
+    install -m 0755 ${UNPACKDIR}/factory-reset ${D}${libexecdir}/factory-reset.d/40_lighttpd
     sed -i -e 's,@LOCALSTATEDIR@,${localstatedir},g' \
         ${D}${libexecdir}/factory-reset.d/40_lighttpd
 
     # use our own service file
-    install -m 0644 ${WORKDIR}/lighttpd.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/lighttpd.service ${D}${systemd_system_unitdir}
     install -d ${D}${systemd_system_unitdir}/lighttpd.service.d
-    install -m 0644 ${WORKDIR}/hardening.conf ${D}${systemd_system_unitdir}/lighttpd.service.d/
+    install -m 0644 ${UNPACKDIR}/hardening.conf ${D}${systemd_system_unitdir}/lighttpd.service.d/
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'logrotate', 'true', 'false', d)}; then
         install -d ${D}${sysconfdir}/logrotate.d
-        install -m 0644 ${WORKDIR}/lighttpd.logrotate ${D}${sysconfdir}/logrotate.d/lighttpd
+        install -m 0644 ${UNPACKDIR}/lighttpd.logrotate ${D}${sysconfdir}/logrotate.d/lighttpd
     else
         install -d ${D}${libexecdir}
-        install -m 0755 ${WORKDIR}/lighttpd-logrotate ${D}${libexecdir}/lighttpd-logrotate
-        install -m 0644 ${WORKDIR}/lighttpd-logrotate.service ${D}${systemd_system_unitdir}/
-        install -m 0644 ${WORKDIR}/lighttpd-logrotate.timer ${D}${systemd_system_unitdir}/
+        install -m 0755 ${UNPACKDIR}/lighttpd-logrotate ${D}${libexecdir}/lighttpd-logrotate
+        install -m 0644 ${UNPACKDIR}/lighttpd-logrotate.service ${D}${systemd_system_unitdir}/
+        install -m 0644 ${UNPACKDIR}/lighttpd-logrotate.timer ${D}${systemd_system_unitdir}/
         sed -i -e 's,@LIBEXECDIR@,${libexecdir},g' \
             ${D}${systemd_system_unitdir}/lighttpd-logrotate.service
         sed -i -e 's,@LOCALSTATEDIR@,${localstatedir},g' \

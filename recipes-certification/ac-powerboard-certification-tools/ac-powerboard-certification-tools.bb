@@ -10,13 +10,13 @@ SRC_URI = " \
 
 inherit allarch
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 # hcitool and hciconfig are used for the BLE test mode
 RDEPENDS:${PN} += "bash bluez5 kmod cc33calibrator dialog wpa-supplicant-cli wpa-supplicant-passphrase wpa-supplicant-configuration"
 
 do_install() {
 	install -d ${D}${bindir}
-	install -m 0755 ${WORKDIR}/ac-powerboard-certification ${D}${bindir}/
-	install -m 0755 ${WORKDIR}/ac-powerboard-certification-menu ${D}${bindir}/
+	install -m 0755 ${UNPACKDIR}/ac-powerboard-certification ${D}${bindir}/
+	install -m 0755 ${UNPACKDIR}/ac-powerboard-certification-menu ${D}${bindir}/
 }

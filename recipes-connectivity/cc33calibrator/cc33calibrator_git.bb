@@ -8,7 +8,7 @@ SRC_URI = "git://git.ti.com/git/cc33xx-wlan/cc33xx-utils.git;protocol=https;bran
 SRCREV = "6913b44bf6bff64e8138d12ffbd67f6965df7137"
 PV = "1.0.0.50+git${SRCPV}"
 
-S = "${WORKDIR}/git/cc33calibrator"
+S = "${UNPACKDIR}/${BB_GIT_DEFAULT_DESTSUFFIX}/cc33calibrator"
 
 DEPENDS += "libnl"
 

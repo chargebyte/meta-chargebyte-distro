@@ -8,7 +8,6 @@ SRCREV = "d9bfb20b2ef002da787adb6b093e1679705c00e2"
 
 inherit setuptools3
 
-S = "${WORKDIR}/git"
 
 RDEPENDS:${PN} += "python3-pyusb"
 

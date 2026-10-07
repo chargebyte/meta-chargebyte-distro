@@ -7,7 +7,6 @@ LIC_FILES_CHKSUM = "file://COPYING;md5=4f51bb496ef8872ccff73f440f2464a8"
 
 SRC_URI = "git://github.com/avrdudes/avrdude.git;protocol=https;branch=main"
 SRCREV = "4c92030e3a486cfbaeb36e298f6f2929e8e031eb"
-S = "${WORKDIR}/git"
 PV = "7.0+git${SRCPV}"
 
 inherit cmake gettext

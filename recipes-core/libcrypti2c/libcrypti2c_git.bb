@@ -12,7 +12,6 @@ SRC_URI = "git://github.com/chargebyte/libcrypti2c.git;protocol=https;branch=imp
 SRCREV = "2539088ac985faafb6a0585dba348cbfa4645c08"
 
 PV = "0.4.0+git${SRCPV}"
-S = "${WORKDIR}/git"
 
 # prevent a QA issue
 do_install() {
