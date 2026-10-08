@@ -8,6 +8,7 @@ inherit packagegroup
 # we inherite mainly from chargesom platform so far
 RDEPENDS:${PN} = " \
     packagegroup-chargesom \
+    cb-eeprom-utils \
     modemmanager \
     ppp \
 "

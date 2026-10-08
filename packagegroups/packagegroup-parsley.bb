@@ -7,6 +7,7 @@ inherit packagegroup
 
 RDEPENDS:${PN} = " \
     can-utils-essentials \
+    cb-eeprom-utils \
     ra-utils \
     ra-utils-fw-${MACHINE} \
     tpm2-pkcs11 \
