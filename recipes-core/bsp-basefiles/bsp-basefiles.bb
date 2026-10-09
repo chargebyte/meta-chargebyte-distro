@@ -2,7 +2,7 @@ LICENSE = "CLOSED"
 
 inherit systemd
 
-PV = "1.27"
+PV = "1.28"
 
 PACKAGE_ARCH = "all"
 
@@ -15,7 +15,7 @@ SRC_URI = " \
     file://led.sh \
     file://usb-mount.sh \
     file://usb-mount.d \
-    ${@bb.utils.contains_any('MACHINE', 'chargesom lime parsley', '', 'file://root', d)} \
+    ${@bb.utils.contains('MACHINE', 'evachargese', 'file://root', '', d)} \
     file://init \
     file://rc.local \
     file://rc-once.sh \
@@ -26,6 +26,8 @@ SRC_URI = " \
     file://led-boot-notification.sh \
     file://cc33xx-bt-enable.service \
 "
+
+S = "${UNPACKDIR}"
 
 do_install() {
     install -d ${D}${base_sbindir}
@@ -78,7 +80,7 @@ do_install() {
                ${D}${systemd_system_unitdir}/*
     fi
 
-    if ${@bb.utils.contains_any('MACHINE', 'chargesom lime parsley', 'false', 'true', d)}; then
+    if ${@bb.utils.contains('MACHINE', 'evachargese', 'true', 'false', d)}; then
         install -d ${D}/home/root/
         cp --no-preserve=ownership ${UNPACKDIR}/root/* ${D}/home/root/
     fi
