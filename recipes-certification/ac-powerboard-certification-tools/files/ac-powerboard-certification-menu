@@ -1,0 +1,407 @@
+#!/bin/bash
+# Menu for the AC-powerboard certification tool set, navigate with arrows, enter and esc
+
+CLI=ac-powerboard-certification
+SETTINGS_FILE=/var/lib/ac-powerboard-certification/settings
+SETTINGS_KEYS="BLE_CHANNEL BLE_LENGTH BLE_PAYLOAD BLE_PHY WIFI_CHANNEL WIFI_PREAMBLE WIFI_RATE WIFI_POWER WIFI_LENGTH WIFI_DELAY WIFI_TONE_OFFSET"
+
+BLE_PAYLOADS=("PRBS9" "11110000" "10101010" "PRBS15" "11111111" "00000000" "00001111" "01010101")
+BLE_PHYS=("" "LE 1M" "LE 2M" "LE Coded S8" "LE Coded S2")
+WIFI_PREAMBLES=([0]="11b short preamble" [1]="11b long preamble" [2]="11a/g OFDM" [3]="11n mixed mode" [5]="11ax SU" [7]="11ax SU ER")
+WIFI_RATES=("" "1 Mbps" "2 Mbps" "5.5 Mbps" "11 Mbps" "6 Mbps" "9 Mbps" "12 Mbps" "18 Mbps" "24 Mbps" "36 Mbps"
+    "48 Mbps" "54 Mbps" "MCS0" "MCS1" "MCS2" "MCS3" "MCS4" "MCS5" "MCS6" "MCS7")
+# Packet length and delay per rate for ~30% duty cycle (TI SDAA443, table 8-1)
+WIFI_DUTY_LENGTHS=(0 100 200 550 1100 650 800 950 1100 1250 1400 1550 1800 240 480 710 950 1450 1880 2110 2350)
+WIFI_DUTY_DELAYS=(0 2875 2595 2417 2366 2170 1773 1575 1221 1044 789 662 680 810 863 738 732 735 712 710 710)
+# WiFi country codes and names offered in the menu, other codes via "Other"
+WIFI_COUNTRIES=(AT Austria BE Belgium BG Bulgaria CH Switzerland CY Cyprus CZ Czechia DE Germany DK Denmark
+    EE Estonia ES Spain FI Finland FR France GB "United Kingdom" GR Greece HR Croatia HU Hungary IE Ireland
+    IS Iceland IT Italy LI Liechtenstein LT Lithuania LU Luxembourg LV Latvia MT Malta NL Netherlands NO Norway
+    PL Poland PT Portugal RO Romania SE Sweden SI Slovenia SK Slovakia US "United States" 00 "World (most restrictive)")
+
+DIALOG=(dialog --stdout --backtitle "AC-powerboard - Certification tools")
+
+load_settings() {
+    local key value
+    BLE_CHANNEL=19
+    BLE_LENGTH=37
+    BLE_PAYLOAD=0
+    BLE_PHY=1
+    WIFI_CHANNEL=6
+    WIFI_PREAMBLE=2
+    WIFI_RATE=5
+    WIFI_POWER=0
+    WIFI_LENGTH=650
+    WIFI_DELAY=2170
+    WIFI_TONE_OFFSET=0
+    [ -f "$SETTINGS_FILE" ] || return 0
+    while IFS='=' read -r key value; do
+        # Only accept known keys with numeric values, the CLI validates the ranges
+        if [[ " $SETTINGS_KEYS " == *" $key "* ]] && [[ "$value" =~ ^-?[0-9]+$ ]]; then
+            printf -v "$key" '%s' "$value"
+        fi
+    done < "$SETTINGS_FILE"
+}
+
+save_settings() {
+    local key
+    mkdir -p "$(dirname "$SETTINGS_FILE")"
+    for key in $SETTINGS_KEYS; do
+        echo "$key=${!key}"
+    done > "$SETTINGS_FILE"
+}
+
+# Show a message box sized to the text, dialog's auto size wraps too narrow
+message_box() {
+    local title=$1 text=$2 line height=5
+    while IFS= read -r line; do
+        height=$((height + 1 + ${#line} / 66))
+    done <<< "$text"
+    "${DIALOG[@]}" --title "$title" --msgbox "$text" $((height > 20 ? 20 : height)) 70
+}
+
+# Run a CLI command with an info box, show errors and optionally the output
+run() {
+    local message=$1 show_output=$2 output
+    shift 2
+    "${DIALOG[@]}" --infobox "$message" 5 60
+    if ! output=$("$CLI" "$@" 2>&1); then
+        message_box "Error" "$output"
+        return 1
+    fi
+    if [ "$show_output" = "yes" ] && [ -n "$output" ]; then
+        message_box "Result" "$output"
+    fi
+}
+
+refresh_status() {
+    STATUS=$("$CLI" status)
+}
+
+status_value() {
+    echo "$STATUS" | sed -n "s/^$1:\s*//p"
+}
+
+running_test() {
+    local test
+    refresh_status
+    test=$(status_value "RF test")
+    [ "$test" = "none" ] || echo "$test"
+}
+
+# Format a tone offset in 0.25 MHz steps as MHz
+tone_offset_mhz() {
+    local quarters=$1 sign=""
+    if [ "$quarters" -lt 0 ]; then
+        sign="-"
+        quarters=$((-quarters))
+    fi
+    printf "%s%d.%02d" "$sign" $((quarters / 4)) $((quarters % 4 * 25))
+}
+
+stop_test() {
+    local test
+    test=$(running_test)
+    case "$test" in
+        BLE*) run "Stopping BLE test..." yes ble stop ;;
+        WiFi*) run "Stopping WiFi test..." yes wifi-test stop ;;
+        *) message_box "Stop test" "No RF test running." ;;
+    esac
+}
+
+# Let the user pick a value from tag/item pairs, prints the selected tag
+select_value() {
+    local title=$1 current=$2
+    shift 2
+    "${DIALOG[@]}" --title "$title" --default-item "$current" --menu "Select $title" 0 0 0 "$@"
+}
+
+# Ask for a number in a range, prints it only if valid
+input_number() {
+    local title=$1 current=$2 min=$3 max=$4 value
+    value=$("${DIALOG[@]}" --title "$title" --inputbox "$title ($min to $max)" 8 50 "$current") || return 1
+    if [[ "$value" =~ ^-?[0-9]+$ ]] && [ "$value" -ge "$min" ] && [ "$value" -le "$max" ]; then
+        echo "$value"
+    else
+        message_box "Error" "$title must be in range $min to $max."
+        return 1
+    fi
+}
+
+menu_everest() {
+    local current choice
+    refresh_status
+    current=$(status_value "EVerest" | cut -d' ' -f1)
+    choice=$(select_value "EVerest charging mode" "$current" \
+        pwm "PWM only" \
+        hlc "HLC with PWM fallback" \
+        hlc-only "HLC only") || return 0
+    run "Switching EVerest to $choice and restarting EVerest..." no everest "$choice"
+}
+
+menu_ble() {
+    local choice=start-tx value index test items
+    while true; do
+        test=$(running_test)
+        value=$("${DIALOG[@]}" --title "BLE channel test" --no-tags --cancel-label "Back" --default-item "$choice" \
+            --menu "Running test: ${test:-none}" 0 0 0 \
+            start-tx "Start TX test" \
+            start-rx "Start RX test" \
+            stop "Stop test" \
+            channel "Channel          $BLE_CHANNEL ($((2402 + 2 * BLE_CHANNEL)) MHz)" \
+            length "Payload length   $BLE_LENGTH bytes" \
+            payload "Payload pattern  ${BLE_PAYLOADS[$BLE_PAYLOAD]}" \
+            phy "PHY              ${BLE_PHYS[$BLE_PHY]}") || return 0
+        choice=$value
+        case "$choice" in
+            start-tx)
+                run "Starting BLE TX test..." no ble tx "$BLE_CHANNEL" "$BLE_LENGTH" "$BLE_PAYLOAD" "$BLE_PHY"
+                ;;
+            start-rx)
+                # LE Coded S2 and S8 are the same receiver PHY
+                run "Starting BLE RX test..." no ble rx "$BLE_CHANNEL" "$((BLE_PHY > 3 ? 3 : BLE_PHY))"
+                ;;
+            stop)
+                stop_test
+                ;;
+            channel)
+                items=()
+                for ((index = 0; index <= 39; index++)); do items+=("$index" "$((2402 + 2 * index)) MHz"); done
+                value=$(select_value "BLE channel" "$BLE_CHANNEL" "${items[@]}") && BLE_CHANNEL=$value
+                ;;
+            length)
+                value=$(input_number "Payload length" "$BLE_LENGTH" 0 255) && BLE_LENGTH=$value
+                ;;
+            payload)
+                items=()
+                for index in "${!BLE_PAYLOADS[@]}"; do items+=("$index" "${BLE_PAYLOADS[$index]}"); done
+                value=$(select_value "Payload pattern" "$BLE_PAYLOAD" "${items[@]}") && BLE_PAYLOAD=$value
+                ;;
+            phy)
+                items=()
+                for index in 1 2 3 4; do items+=("$index" "${BLE_PHYS[$index]}"); done
+                value=$(select_value "PHY" "$BLE_PHY" "${items[@]}") && BLE_PHY=$value
+                ;;
+        esac
+        save_settings
+    done
+}
+
+wifi_rate_range() {
+    case "$1" in
+        0|1) echo "1 4" ;;
+        2) echo "5 12" ;;
+        *) echo "13 20" ;;
+    esac
+}
+
+set_wifi_rate() {
+    WIFI_RATE=$1
+    WIFI_LENGTH=${WIFI_DUTY_LENGTHS[$1]}
+    WIFI_DELAY=${WIFI_DUTY_DELAYS[$1]}
+}
+
+menu_wifi() {
+    local choice=start-tx value index test min max items
+    while true; do
+        test=$(running_test)
+        value=$("${DIALOG[@]}" --title "WiFi RF test" --no-tags --cancel-label "Back" --default-item "$choice" \
+            --menu "Running test: ${test:-none}\n\nChanging the rate sets length and delay for ~30% duty cycle." 0 0 0 \
+            start-tx "Start TX test (packets)" \
+            start-tone "Start TX test (single tone)" \
+            start-rx "Start RX test" \
+            rx-stats "Show RX statistics" \
+            stop "Stop test" \
+            channel "Channel          $WIFI_CHANNEL ($((2407 + 5 * WIFI_CHANNEL)) MHz)" \
+            preamble "Preamble         ${WIFI_PREAMBLES[$WIFI_PREAMBLE]}" \
+            rate "Rate             ${WIFI_RATES[$WIFI_RATE]}" \
+            power "TX power         $WIFI_POWER dBm" \
+            length "Packet length    $WIFI_LENGTH bytes" \
+            delay "Packet delay     $WIFI_DELAY us" \
+            offset "Tone offset      $WIFI_TONE_OFFSET ($(tone_offset_mhz "$WIFI_TONE_OFFSET") MHz)") || return 0
+        choice=$value
+        case "$choice" in
+            start-tx)
+                run "Starting WiFi TX test..." no wifi-test tx "$WIFI_CHANNEL" "$WIFI_PREAMBLE" "$WIFI_RATE" \
+                    "$WIFI_POWER" "$WIFI_LENGTH" "$WIFI_DELAY"
+                ;;
+            start-tone)
+                run "Starting WiFi tone..." no wifi-test tone "$WIFI_CHANNEL" "$WIFI_TONE_OFFSET"
+                ;;
+            start-rx)
+                run "Starting WiFi RX test..." no wifi-test rx "$WIFI_CHANNEL"
+                ;;
+            rx-stats)
+                run "Reading RX statistics..." yes wifi-test rx-stats
+                ;;
+            stop)
+                stop_test
+                ;;
+            channel)
+                items=()
+                for ((index = 1; index <= 13; index++)); do items+=("$index" "$((2407 + 5 * index)) MHz"); done
+                value=$(select_value "WiFi channel" "$WIFI_CHANNEL" "${items[@]}") && WIFI_CHANNEL=$value
+                ;;
+            preamble)
+                items=()
+                for index in "${!WIFI_PREAMBLES[@]}"; do items+=("$index" "${WIFI_PREAMBLES[$index]}"); done
+                value=$(select_value "Preamble" "$WIFI_PREAMBLE" "${items[@]}") || continue
+                WIFI_PREAMBLE=$value
+                read -r min max <<< "$(wifi_rate_range "$WIFI_PREAMBLE")"
+                if [ "$WIFI_RATE" -lt "$min" ] || [ "$WIFI_RATE" -gt "$max" ]; then
+                    set_wifi_rate "$min"
+                fi
+                ;;
+            rate)
+                read -r min max <<< "$(wifi_rate_range "$WIFI_PREAMBLE")"
+                items=()
+                for ((index = min; index <= max; index++)); do items+=("$index" "${WIFI_RATES[$index]}"); done
+                value=$(select_value "Rate" "$WIFI_RATE" "${items[@]}") && set_wifi_rate "$value"
+                ;;
+            power)
+                items=()
+                for ((index = -10; index <= 20; index++)); do items+=("$index" "$index dBm"); done
+                value=$(select_value "TX power" "$WIFI_POWER" "${items[@]}") && WIFI_POWER=$value
+                ;;
+            length)
+                value=$(input_number "Packet length" "$WIFI_LENGTH" 0 16000) && WIFI_LENGTH=$value
+                ;;
+            delay)
+                value=$(input_number "Packet delay (us)" "$WIFI_DELAY" 50 1000000) && WIFI_DELAY=$value
+                ;;
+            offset)
+                value=$(input_number "Tone offset in 0.25 MHz steps" "$WIFI_TONE_OFFSET" -40 40) \
+                    && WIFI_TONE_OFFSET=$value
+                ;;
+        esac
+        save_settings
+    done
+}
+
+connect_wifi_client() {
+    local ssid=$1 security=$2 passphrase=""
+    case "$security" in
+        *unsupported)
+            message_box "WiFi client network" "$ssid uses ${security%-unsupported}, which is not supported. Use an open or WPA/WPA2 network."
+            return 0
+            ;;
+        open) ;;
+        *)
+            passphrase=$("${DIALOG[@]}" --title "Passphrase" --insecure \
+                --passwordbox "Passphrase for $ssid" 8 60) || return 0
+            ;;
+    esac
+    run "Connecting to $ssid, this can take up to a minute..." yes wifi-client connect "$ssid" "$passphrase"
+}
+
+menu_wifi_client() {
+    local choice=scan value output index ssid passphrase line signal security
+    local -a ssids securities items
+    while true; do
+        value=$("${DIALOG[@]}" --title "WiFi client network" --no-tags --cancel-label "Back" \
+            --default-item "$choice" --menu "$("$CLI" wifi-client status)" 0 0 0 \
+            scan "Scan and connect" \
+            manual "Connect to network by name" \
+            forget "Forget network" \
+            country "Country (regulatory domain)") || return 0
+        choice=$value
+        case "$choice" in
+            scan)
+                "${DIALOG[@]}" --infobox "Scanning for networks..." 5 60
+                if ! output=$("$CLI" wifi-client scan 2>&1); then
+                    message_box "Error" "$output"
+                    continue
+                fi
+                ssids=()
+                securities=()
+                items=()
+                while IFS=$'\t' read -r signal security ssid; do
+                    [ -n "$ssid" ] || continue
+                    # scan results escape special characters as \xNN
+                    ssids+=("$(printf '%b' "$ssid")")
+                    securities+=("$security")
+                    items+=("$((${#ssids[@]} - 1))" "$(printf '%-32s %4s dBm  %s' "${ssids[-1]}" "$signal" "$security")")
+                done <<< "$output"
+                if [ "${#ssids[@]}" -eq 0 ]; then
+                    message_box "WiFi client network" "No networks found."
+                    continue
+                fi
+                index=$("${DIALOG[@]}" --title "Networks" --no-tags --menu "Select a network" 0 0 0 "${items[@]}") \
+                    || continue
+                connect_wifi_client "${ssids[$index]}" "${securities[$index]}"
+                ;;
+            country)
+                value=$("$CLI" wifi-client country | sed -n 's/^Configured:\s*//p')
+                value=$(select_value "WiFi country" "$value" "${WIFI_COUNTRIES[@]}" other "Other...") || continue
+                if [ "$value" = "other" ]; then
+                    value=$("${DIALOG[@]}" --title "WiFi country" --inputbox \
+                        "Country code (ISO 3166-1 alpha-2)" 8 50) || continue
+                fi
+                run "Setting WiFi country to $value..." yes wifi-client country "$value"
+                ;;
+            manual)
+                ssid=$("${DIALOG[@]}" --title "Network name" --inputbox "SSID (hidden networks are supported)" 8 60) \
+                    || continue
+                [ -n "$ssid" ] || continue
+                passphrase=$("${DIALOG[@]}" --title "Passphrase" --insecure \
+                    --passwordbox "Passphrase for $ssid (empty for an open network)" 8 60) || continue
+                run "Connecting to $ssid, this can take up to a minute..." yes wifi-client connect "$ssid" "$passphrase"
+                ;;
+            forget)
+                "${DIALOG[@]}" --title "Forget network" --yesno "Remove the configured WiFi network?" 6 50 \
+                    && run "Removing network..." no wifi-client forget
+                ;;
+        esac
+    done
+}
+
+main_menu() {
+    local choice=wifi selection wifi_action bt_action radio_action
+    while true; do
+        refresh_status
+        if [ "$(status_value WiFi | cut -d' ' -f1)" = "on" ]; then wifi_action=off; else wifi_action=on; fi
+        if [ "$(status_value Bluetooth | cut -d' ' -f1)" = "on" ]; then bt_action=off; else bt_action=on; fi
+        if [ "$(status_value Drivers)" = "loaded" ]; then radio_action=off; else radio_action=on; fi
+        selection=$("${DIALOG[@]}" --title "Main menu" --no-tags --cancel-label "Exit" --default-item "$choice" \
+            --menu "$STATUS" 0 0 0 \
+            wifi "WiFi: turn $wifi_action" \
+            wificlient "WiFi client network" \
+            bt "Bluetooth: turn $bt_action" \
+            radio "CC33xx drivers: $([ "$radio_action" = off ] && echo unload || echo load) (WiFi + Bluetooth)" \
+            everest "EVerest charging mode" \
+            ble "BLE channel test" \
+            wlan "WiFi RF test" \
+            stop "Stop running RF test")
+        if [ $? -eq 0 ]; then
+            choice=$selection
+        else
+            [ -z "$(running_test)" ] && return 0
+            "${DIALOG[@]}" --title "Exit" --yesno "An RF test is still running:\n\n$(running_test)\n\nExit anyway?" 0 0 \
+                && return 0
+            continue
+        fi
+        case "$choice" in
+            wifi) run "Turning WiFi $wifi_action..." no wifi "$wifi_action" ;;
+            bt) run "Turning Bluetooth $bt_action..." no bt "$bt_action" ;;
+            radio)
+                if [ "$radio_action" = on ]; then
+                    run "Loading the CC33xx drivers, this takes about a minute..." no radio on
+                else
+                    run "Unloading the CC33xx drivers..." no radio off
+                fi
+                ;;
+            wificlient) menu_wifi_client ;;
+            everest) menu_everest ;;
+            ble) menu_ble ;;
+            wlan) menu_wifi ;;
+            stop) stop_test ;;
+        esac
+    done
+}
+
+[ "$(id -u)" -eq 0 ] || { echo "Error: $(basename "$0") must be run as root" >&2; exit 1; }
+command -v dialog > /dev/null || { echo "Error: dialog is not installed" >&2; exit 1; }
+
+load_settings
+main_menu
+printf '\033[H\033[2J'

@@ -1,0 +1,699 @@
+#!/bin/bash
+# Certification helper for the AC-powerboard
+
+set -e
+
+EVEREST_CONFIG=/etc/everest/config.yaml
+HCI_DEVICE=hci0
+WIFI_INTERFACE=wlan0
+WIFI_SERVICE=wpa_supplicant@$WIFI_INTERFACE.service
+WPA_CONFIG=/etc/wpa_supplicant/wpa_supplicant-$WIFI_INTERFACE.conf
+CALIBRATOR=cc33calibrator
+# Describes the running RF test, cleared on reboot
+TEST_STATE=/run/ac-powerboard-certification/test
+BT_SERVICE=bluetooth.service
+# Firmware load can take > 60s while the kernel waits for the missing cc33xx-nvs.bin
+BLE_ENABLE_TIMEOUT=120
+RADIO_MODULES="cc33xx cc33xx_sdio btti_uart"
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") <command> [arguments]
+
+Radio (runtime only, normal operation is restored on reboot):
+  wifi on|off|status          Soft block/unblock WiFi via rfkill and stop/start $WIFI_SERVICE
+  bt on|off|status            Soft block/unblock Bluetooth via rfkill and stop/start $BT_SERVICE
+  radio off|on|status         Unload/load the CC33xx drivers (powers down WiFi and Bluetooth together)
+
+BLE channel tests (HCI LE test mode on $HCI_DEVICE):
+  ble tx <channel> [length] [payload] [phy]
+                              Start continuous TX test
+                                channel  0-39 (f = 2402 + 2 * channel MHz)
+                                length   payload length 0-255 (default 37)
+                                payload  0 PRBS9, 1 11110000, 2 10101010, 3 PRBS15,
+                                         4 11111111, 5 00000000, 6 00001111, 7 01010101 (default 0)
+                                phy      1 LE 1M, 2 LE 2M, 3 LE Coded S8, 4 LE Coded S2 (default 1)
+  ble rx <channel> [phy]      Start RX test, phy 1 LE 1M, 2 LE 2M, 3 LE Coded (default 1)
+  ble stop                    Stop the running test and print the received packet count
+
+WiFi RF tests (TI CC33xx calibrator in PLT mode, stops $WIFI_SERVICE):
+  wifi-test tx <channel> <preamble> <rate> <power> <length> <delay>
+                              Start continuous packet TX test
+                                channel  1-13
+                                preamble 0 11b short, 1 11b long, 2 11a/g OFDM, 3 11n mixed,
+                                         5 11ax SU, 7 11ax SU ER
+                                rate     1-4 11b (1, 2, 5.5, 11 Mbps), 5-12 OFDM (6-54 Mbps),
+                                         13-20 MCS0-MCS7 (11n/11ax)
+                                power    TX power -10 to 20 dBm
+                                length   packet length in bytes 0-3500 (MCS rates 0-16000)
+                                delay    delay between packets 50-1000000 us
+  wifi-test tone <channel> <offset>
+                              Start single tone TX, offset -40 to 40 in 0.25 MHz steps
+  wifi-test rx <channel>      Start RX statistics (all source addresses)
+  wifi-test rx-stats          Print RX statistics
+  wifi-test stop              Stop the running test, leave PLT mode and start $WIFI_SERVICE again
+
+WiFi client network (one network, stored in $WPA_CONFIG):
+  wifi-client scan            List networks as <signal dBm> <security> <ssid>, strongest first
+                              (WPA3-only, enterprise and WEP networks are not supported)
+  wifi-client connect <ssid> [passphrase]
+                              Replace the configured network and connect, no passphrase for open
+                              networks, 8-63 characters or 64 hex digits otherwise
+  wifi-client forget          Remove the configured network
+  wifi-client status          Show network, connection state, IP address and country
+  wifi-client country [code]  Show or set the country (ISO 3166-1 alpha-2, 00 for world) which
+                              defines the WiFi regulatory domain, stored in the configuration
+
+EVerest:
+  everest pwm|hlc|hlc-only    Set the charging mode in $EVEREST_CONFIG and restart EVerest
+                              pwm: PWM only, hlc: HLC with PWM fallback, hlc-only: HLC only
+  everest status              Show the active charging mode
+
+status                        Show the state of all of the above
+EOF
+}
+
+die() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+require_root() {
+    [ "$(id -u)" -eq 0 ] || die "this command must be run as root"
+}
+
+running_test() {
+    cat "$TEST_STATE" 2>/dev/null || true
+}
+
+require_no_test() {
+    local test
+    test=$(running_test)
+    [ -z "$test" ] || die "a test is already running: $test"
+}
+
+set_test_state() {
+    mkdir -p "$(dirname "$TEST_STATE")"
+    echo "$*" > "$TEST_STATE"
+}
+
+clear_test_state() {
+    rm -f "$TEST_STATE"
+}
+
+# Print the sysfs path of the first rfkill switch of the given type
+rfkill_path() {
+    local rfkill
+    for rfkill in /sys/class/rfkill/rfkill*; do
+        [ -e "$rfkill/type" ] || continue
+        if [ "$(cat "$rfkill/type")" = "$1" ]; then
+            echo "$rfkill"
+            return 0
+        fi
+    done
+    return 1
+}
+
+rfkill_set() {
+    local path
+    path=$(rfkill_path "$1") || die "no rfkill switch of type '$1' found (radio drivers loaded?)"
+    echo "$2" > "$path/soft"
+}
+
+rfkill_status() {
+    local path
+    if path=$(rfkill_path "$1"); then
+        echo "  rfkill:  $(cat "$path/name") soft blocked: $(cat "$path/soft"), hard blocked: $(cat "$path/hard")"
+    else
+        echo "  rfkill:  not available"
+    fi
+}
+
+service_status() {
+    echo "  service: $1 $(systemctl is-active "$1" 2>/dev/null || true)"
+}
+
+cmd_wifi() {
+    case "$1" in
+        on)
+            require_root
+            rfkill_set wlan 0
+            systemctl start "$WIFI_SERVICE"
+            ;;
+        off)
+            require_root
+            systemctl stop "$WIFI_SERVICE"
+            rfkill_set wlan 1
+            ;;
+        status)
+            echo "WiFi:"
+            rfkill_status wlan
+            service_status "$WIFI_SERVICE"
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+cmd_bt() {
+    case "$1" in
+        on)
+            require_root
+            rfkill_set bluetooth 0
+            systemctl start "$BT_SERVICE"
+            # bluetoothd does not power the controller up again after unblocking
+            hciconfig "$HCI_DEVICE" up
+            ;;
+        off)
+            require_root
+            systemctl stop "$BT_SERVICE"
+            rfkill_set bluetooth 1
+            ;;
+        status)
+            echo "Bluetooth:"
+            rfkill_status bluetooth
+            service_status "$BT_SERVICE"
+            hciconfig "$HCI_DEVICE" 2>/dev/null | sed -n "3s/^\s*/  $HCI_DEVICE:    /p" || true
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+wait_for_path() {
+    local path=$1 timeout=$2
+    while [ ! -e "$path" ]; do
+        [ "$timeout" -gt 0 ] || return 1
+        timeout=$((timeout - 1))
+        sleep 1
+    done
+}
+
+# Print the cc33xx ble_enable debugfs path once the firmware is up
+wait_for_ble_enable() {
+    local timeout=$BLE_ENABLE_TIMEOUT path
+    while true; do
+        for path in /sys/kernel/debug/ieee80211/phy*/cc33xx/ble_enable; do
+            if [ -e "$path" ]; then
+                echo "$path"
+                return 0
+            fi
+        done
+        [ "$timeout" -gt 0 ] || return 1
+        timeout=$((timeout - 1))
+        sleep 1
+    done
+}
+
+cmd_radio() {
+    local module ble_enable
+    case "$1" in
+        on)
+            require_root
+            modprobe -a $RADIO_MODULES
+            echo "Waiting for the CC33xx firmware (up to ${BLE_ENABLE_TIMEOUT}s)..."
+            ble_enable=$(wait_for_ble_enable) || die "CC33xx firmware not ready after ${BLE_ENABLE_TIMEOUT}s"
+            echo 1 > "$ble_enable"
+            systemctl start "$WIFI_SERVICE" "$BT_SERVICE"
+            wait_for_path "/sys/class/bluetooth/$HCI_DEVICE" 10 || die "$HCI_DEVICE did not appear"
+            hciconfig "$HCI_DEVICE" up
+            ;;
+        off)
+            require_root
+            systemctl stop "$WIFI_SERVICE" "$BT_SERVICE"
+            modprobe -r btti_uart cc33xx_sdio cc33xx
+            ;;
+        status)
+            echo "CC33xx drivers:"
+            for module in $RADIO_MODULES; do
+                if [ -d "/sys/module/$module" ]; then
+                    echo "  $module: loaded"
+                else
+                    echo "  $module: not loaded"
+                fi
+            done
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Send an HCI LE command (OGF 0x08) and print the return parameters after the status byte
+hci_le_cmd() {
+    local ocf=$1 output bytes status
+    shift
+    output=$(hcitool -i "$HCI_DEVICE" cmd 0x08 "$ocf" "$@") || die "hcitool failed"
+    # Command Complete event: num_hci_cmds, opcode (2 bytes), status, return parameters
+    bytes=($(echo "$output" | sed -n '/HCI Event: 0x0e/{n;p}'))
+    [ "${#bytes[@]}" -ge 4 ] || die "unexpected HCI response: $output"
+    status=$((16#${bytes[3]}))
+    [ "$status" -eq 0 ] || die "HCI command failed with status 0x${bytes[3]}"
+    echo "${bytes[@]:4}"
+}
+
+hex_byte() {
+    printf "0x%02x" "$1"
+}
+
+check_range() {
+    local name=$1 value=$2 min=$3 max=$4
+    [[ "$value" =~ ^-?[0-9]+$ ]] && [ "$value" -ge "$min" ] && [ "$value" -le "$max" ] \
+        || die "$name must be in range $min-$max"
+}
+
+cmd_ble() {
+    local channel length payload phy params
+    require_root
+    case "$1" in
+        tx|rx)
+            require_no_test
+            ;;
+    esac
+    case "$1" in
+        tx)
+            channel=$2
+            length=${3:-37}
+            payload=${4:-0}
+            phy=${5:-1}
+            check_range channel "$channel" 0 39
+            check_range length "$length" 0 255
+            check_range payload "$payload" 0 7
+            check_range phy "$phy" 1 4
+            # LE Transmitter Test [v2]
+            hci_le_cmd 0x0034 "$(hex_byte "$channel")" "$(hex_byte "$length")" \
+                "$(hex_byte "$payload")" "$(hex_byte "$phy")" > /dev/null
+            set_test_state "BLE TX channel $channel ($((2402 + 2 * channel)) MHz), length $length, payload $payload, phy $phy"
+            echo "BLE TX test running on channel $channel ($((2402 + 2 * channel)) MHz), stop with: $(basename "$0") ble stop"
+            ;;
+        rx)
+            channel=$2
+            phy=${3:-1}
+            check_range channel "$channel" 0 39
+            check_range phy "$phy" 1 3
+            # LE Receiver Test [v2], standard modulation index
+            hci_le_cmd 0x0033 "$(hex_byte "$channel")" "$(hex_byte "$phy")" 0x00 > /dev/null
+            set_test_state "BLE RX channel $channel ($((2402 + 2 * channel)) MHz), phy $phy"
+            echo "BLE RX test running on channel $channel ($((2402 + 2 * channel)) MHz), stop with: $(basename "$0") ble stop"
+            ;;
+        stop)
+            [[ "$(running_test)" != WiFi* ]] || die "the running test is a WiFi test"
+            clear_test_state
+            # LE Test End, returns the number of received packets (little endian)
+            params=($(hci_le_cmd 0x001f))
+            echo "BLE test stopped, received packets: $((16#${params[1]}${params[0]}))"
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Run a calibrator command, its exit code does not reflect parameter errors
+calibrator() {
+    local output
+    command -v "$CALIBRATOR" > /dev/null || die "$CALIBRATOR is not installed"
+    output=$("$CALIBRATOR" "$WIFI_INTERFACE" "$@" 2>&1) || die "$CALIBRATOR $*: $output"
+    if echo "$output" | grep -q -i -E "out of range|not supported|syntax|failed|invalid"; then
+        die "$CALIBRATOR $*: $output"
+    fi
+    echo "$output"
+}
+
+plt_start() {
+    local channel=$1 path
+    [ -e "/sys/class/net/$WIFI_INTERFACE" ] || die "$WIFI_INTERFACE not available (radio drivers loaded?)"
+    path=$(rfkill_path wlan) || die "no WiFi rfkill switch found"
+    [ "$(cat "$path/soft")" = "0" ] || die "WiFi is disabled, enable it first"
+    systemctl stop "$WIFI_SERVICE"
+    ip link set "$WIFI_INTERFACE" down
+    calibrator plt power_mode on > /dev/null
+    # band 0 (2.4 GHz), bandwidth 0 (20 MHz)
+    calibrator cc33xx_plt tune_channel "$channel" 0 0 > /dev/null
+}
+
+check_wifi_rate() {
+    local preamble=$1 rate=$2
+    case "$preamble" in
+        0|1) check_range rate "$rate" 1 4 ;;
+        2) check_range rate "$rate" 5 12 ;;
+        3|5|7) check_range rate "$rate" 13 20 ;;
+        *) die "preamble must be one of 0, 1, 2, 3, 5, 7" ;;
+    esac
+}
+
+cmd_wifi_test() {
+    local channel preamble rate power length delay offset test
+    require_root
+    case "$1" in
+        tx|tone|rx)
+            require_no_test
+            channel=$2
+            check_range channel "$channel" 1 13
+            ;;
+    esac
+    case "$1" in
+        tx)
+            preamble=$3
+            rate=$4
+            power=$5
+            length=$6
+            delay=$7
+            check_wifi_rate "$preamble" "$rate"
+            check_range power "$power" -10 20
+            check_range length "$length" 0 16000
+            check_range delay "$delay" 50 1000000
+            plt_start "$channel"
+            calibrator cc33xx_plt set_manual_calib -tx 1 > /dev/null
+            calibrator cc33xx_plt set_tx -default 0 > /dev/null
+            # TX power index 0-30 maps to -10 to 20 dBm
+            calibrator cc33xx_plt set_tx -preamble_type "$preamble" -phy_rate "$rate" \
+                -tx_power $((power + 10)) -length const packet "$length" -delay "$delay" > /dev/null
+            calibrator cc33xx_plt start_tx > /dev/null
+            set_test_state "WiFi TX channel $channel, preamble $preamble, rate $rate, $power dBm, length $length, delay $delay us"
+            echo "WiFi TX test running on channel $channel, stop with: $(basename "$0") wifi-test stop"
+            ;;
+        tone)
+            offset=$3
+            check_range offset "$offset" -40 40
+            plt_start "$channel"
+            calibrator cc33xx_plt set_manual_calib -tx 1 > /dev/null
+            # mode 2: single tone
+            calibrator cc33xx_plt tx_start_tone 2 "$offset" > /dev/null
+            set_test_state "WiFi tone channel $channel, offset $offset"
+            echo "WiFi tone running on channel $channel, stop with: $(basename "$0") wifi-test stop"
+            ;;
+        rx)
+            plt_start "$channel"
+            calibrator cc33xx_plt set_manual_calib -rx 1 > /dev/null
+            calibrator cc33xx_plt start_rx -source_mac FF:FF:FF:FF:FF:FF > /dev/null
+            set_test_state "WiFi RX channel $channel"
+            echo "WiFi RX test running on channel $channel, show statistics with: $(basename "$0") wifi-test rx-stats"
+            ;;
+        rx-stats)
+            [[ "$(running_test)" == "WiFi RX"* ]] || die "no WiFi RX test running"
+            calibrator cc33xx_plt get_rx_stats | grep -v "^status:"
+            ;;
+        stop)
+            test=$(running_test)
+            [[ "$test" == WiFi* ]] || die "no WiFi test running"
+            case "$test" in
+                "WiFi TX"*) calibrator cc33xx_plt stop_tx > /dev/null ;;
+                "WiFi tone"*) calibrator cc33xx_plt tx_tone_stop > /dev/null ;;
+                "WiFi RX"*)
+                    calibrator cc33xx_plt get_rx_stats | grep -v "^status:"
+                    calibrator cc33xx_plt stop_rx > /dev/null
+                    ;;
+            esac
+            calibrator plt power_mode off > /dev/null
+            clear_test_state
+            systemctl start "$WIFI_SERVICE"
+            echo "WiFi test stopped"
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+wpa() {
+    wpa_cli -i "$WIFI_INTERFACE" "$@"
+}
+
+wpa_ok() {
+    local output
+    output=$(wpa "$@" 2>&1)
+    [ "$output" = "OK" ] || die "wpa_cli $1 failed: $output"
+}
+
+require_wpa_supplicant() {
+    systemctl -q is-active "$WIFI_SERVICE" || die "WiFi is off, enable it first"
+}
+
+# save_config only works with update_config=1, older configurations lack it
+ensure_update_config() {
+    grep -q "^update_config=1" "$WPA_CONFIG" && return 0
+    sed -i "/^update_config=/d" "$WPA_CONFIG"
+    sed -i "1i update_config=1" "$WPA_CONFIG"
+    wpa_ok reconfigure
+}
+
+wpa_status_value() {
+    wpa status 2>/dev/null | sed -n "s/^$1=//p"
+}
+
+wifi_country() {
+    sed -n 's/^country=//p' "$WPA_CONFIG" | head -n 1
+}
+
+wifi_regdomain() {
+    iw reg get 2>/dev/null | sed -n 's/^country \([0-9A-Z]*\):.*/\1/p' | head -n 1
+}
+
+wifi_client_ip() {
+    ip -4 -o addr show dev "$WIFI_INTERFACE" 2>/dev/null | sed -n 's/.* inet \([0-9.]*\).*/\1/p' | head -n 1
+}
+
+cmd_wifi_client() {
+    local ssid passphrase id state ip timeout line bssid frequency signal flags security country
+    local -A best_signal best_security
+    case "$1" in
+        scan)
+            require_root
+            require_wpa_supplicant
+            # FAIL-BUSY means a scan is already running, the results are used anyway
+            wpa scan > /dev/null
+            sleep 5
+            while IFS=$'\t' read -r bssid frequency signal flags ssid; do
+                [[ "$signal" =~ ^-?[0-9]+$ ]] && [ -n "$ssid" ] || continue
+                # Only open and WPA/WPA2-PSK are supported, the wpa_supplicant build has no SAE
+                case "$flags" in
+                    *PSK*) security=wpa2 ;;
+                    *SAE*) security=wpa3-unsupported ;;
+                    *EAP*) security=enterprise-unsupported ;;
+                    *WEP*) security=wep-unsupported ;;
+                    *) security=open ;;
+                esac
+                if [ -z "${best_signal[$ssid]}" ] || [ "$signal" -gt "${best_signal[$ssid]}" ]; then
+                    best_signal[$ssid]=$signal
+                    best_security[$ssid]=$security
+                fi
+            done < <(wpa scan_results)
+            for ssid in "${!best_signal[@]}"; do
+                printf '%s\t%s\t%s\n' "${best_signal[$ssid]}" "${best_security[$ssid]}" "$ssid"
+            done | sort -t $'\t' -k1,1 -n -r
+            ;;
+        connect)
+            require_root
+            require_wpa_supplicant
+            ssid=$2
+            passphrase=$3
+            [ -n "$ssid" ] || die "missing SSID"
+            if [ -n "$passphrase" ] && ! [[ "$passphrase" =~ ^[0-9a-fA-F]{64}$ ]]; then
+                [ "${#passphrase}" -ge 8 ] && [ "${#passphrase}" -le 63 ] \
+                    || die "the passphrase must have 8-63 characters"
+            fi
+            ensure_update_config
+            wpa_ok remove_network all
+            id=$(wpa add_network)
+            [[ "$id" =~ ^[0-9]+$ ]] || die "wpa_cli add_network failed: $id"
+            # Hex encoded SSID, works for any character
+            wpa_ok set_network "$id" ssid "$(printf '%s' "$ssid" | od -An -tx1 -v | tr -d ' \n')"
+            wpa_ok set_network "$id" scan_ssid 1
+            if [ -z "$passphrase" ]; then
+                wpa_ok set_network "$id" key_mgmt NONE
+            else
+                # Store the derived PSK instead of the plain passphrase
+                if ! [[ "$passphrase" =~ ^[0-9a-fA-F]{64}$ ]]; then
+                    passphrase=$(wpa_passphrase "$ssid" "$passphrase" | sed -n 's/^\s*psk=\([0-9a-f]\{64\}\)$/\1/p')
+                    [ -n "$passphrase" ] || die "wpa_passphrase failed"
+                fi
+                wpa_ok set_network "$id" psk "$passphrase"
+            fi
+            wpa_ok enable_network "$id"
+            wpa_ok save_config
+            timeout=30
+            until [ "$(wpa_status_value wpa_state)" = "COMPLETED" ]; do
+                [ "$timeout" -gt 0 ] || die "could not connect to $ssid (state $(wpa_status_value wpa_state)), check SSID and passphrase"
+                timeout=$((timeout - 1))
+                sleep 1
+            done
+            timeout=20
+            until ip=$(wifi_client_ip) && [ -n "$ip" ]; do
+                [ "$timeout" -gt 0 ] || die "connected to $ssid, but no IP address received via DHCP"
+                timeout=$((timeout - 1))
+                sleep 1
+            done
+            echo "Connected to $ssid, IP address $ip"
+            ;;
+        forget)
+            require_root
+            require_wpa_supplicant
+            ensure_update_config
+            wpa_ok remove_network all
+            wpa_ok save_config
+            echo "WiFi network removed"
+            ;;
+        status)
+            if ! systemctl -q is-active "$WIFI_SERVICE"; then
+                echo "WiFi client: off"
+                return 0
+            fi
+            ssid=$(wpa_status_value ssid)
+            state=$(wpa_status_value wpa_state)
+            ip=$(wifi_client_ip)
+            echo "Network: ${ssid:-none}"
+            echo "State:   ${state:-unknown}"
+            echo "IP:      ${ip:-none}"
+            echo "Country: $(wifi_country)"
+            ;;
+        country)
+            if [ -z "$2" ]; then
+                echo "Configured: $(wifi_country)"
+                echo "Active:     $(wifi_regdomain)"
+                return 0
+            fi
+            require_root
+            country=${2^^}
+            [[ "$country" =~ ^([A-Z]{2}|00)$ ]] || die "invalid country code $2, use ISO 3166-1 alpha-2 like AT or DE"
+            if grep -q "^country=" "$WPA_CONFIG"; then
+                sed -i "s/^country=.*/country=$country/" "$WPA_CONFIG"
+            else
+                sed -i "1i country=$country" "$WPA_CONFIG"
+            fi
+            if ! systemctl -q is-active "$WIFI_SERVICE"; then
+                echo "WiFi country set to $country, applied when WiFi is enabled"
+                return 0
+            fi
+            wpa_ok set country "$country"
+            timeout=5
+            until [ "$(wifi_regdomain)" = "$country" ]; do
+                [ "$timeout" -gt 0 ] || die "country $country stored, but the active regulatory domain is $(wifi_regdomain)"
+                timeout=$((timeout - 1))
+                sleep 1
+            done
+            echo "WiFi country set to $country"
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+}
+
+# Print an EvseManager option, or the given EvseManager manifest default if not set
+everest_value() {
+    local value
+    value=$(sed -n "s/^[[:space:]]*$1:[[:space:]]*\([a-z]*\).*/\1/p" "$EVEREST_CONFIG")
+    echo "${value:-$2}"
+}
+
+everest_mode() {
+    case "$(everest_value ac_hlc_enabled false) $(everest_value ac_enforce_hlc false) $(everest_value ac_hlc_use_5percent true)" in
+        "false false false") echo "pwm" ;;
+        "true false true") echo "hlc" ;;
+        "true true true") echo "hlc-only" ;;
+        *) echo "custom" ;;
+    esac
+}
+
+# Set an EvseManager option, add it after the given option if missing
+everest_set() {
+    local key=$1 value=$2 after=$3
+    if grep -q "^[[:space:]]*$key:" "$EVEREST_CONFIG"; then
+        sed -i "s/^\([[:space:]]*$key:\).*/\1 $value/" "$EVEREST_CONFIG"
+    else
+        sed -i "s/^\([[:space:]]*\)\($after:.*\)/\1\2\n\1$key: $value/" "$EVEREST_CONFIG"
+    fi
+}
+
+cmd_everest() {
+    local hlc enforce five_percent
+    case "$1" in
+        pwm) hlc=false; enforce=false; five_percent=false ;;
+        hlc) hlc=true; enforce=false; five_percent=true ;;
+        hlc-only) hlc=true; enforce=true; five_percent=true ;;
+        status)
+            echo "EVerest:"
+            echo "  mode: $(everest_mode)"
+            service_status everest.service
+            return 0
+            ;;
+        *)
+            usage >&2
+            exit 1
+            ;;
+    esac
+    require_root
+    [ "$(grep -c "^[[:space:]]*ac_hlc_enabled:" "$EVEREST_CONFIG")" = "1" ] || \
+        die "Expected exactly one ac_hlc_enabled option in $EVEREST_CONFIG"
+    everest_set ac_hlc_enabled "$hlc"
+    everest_set ac_enforce_hlc "$enforce" ac_hlc_enabled
+    everest_set ac_hlc_use_5percent "$five_percent" ac_enforce_hlc
+    [ "$(everest_mode)" = "$1" ] || die "Failed to set EVerest mode $1 in $EVEREST_CONFIG"
+    systemctl restart everest.service
+    echo "EVerest mode switched to $1"
+}
+
+radio_state() {
+    local path
+    if ! path=$(rfkill_path "$1"); then
+        echo "unavailable"
+    elif [ "$(cat "$path/soft")" != "0" ] || [ "$(cat "$path/hard")" != "0" ]; then
+        echo "off"
+    else
+        echo "on"
+    fi
+}
+
+wifi_client_summary() {
+    local ssid ip
+    systemctl -q is-active "$WIFI_SERVICE" || { echo "-"; return 0; }
+    [ "$(wpa_status_value wpa_state)" = "COMPLETED" ] || { echo "not connected"; return 0; }
+    ssid=$(wpa_status_value ssid)
+    ip=$(wifi_client_ip)
+    echo "$ssid (${ip:-no IP})"
+}
+
+cmd_status() {
+    local drivers=unloaded test
+    [ -d /sys/module/cc33xx ] && drivers=loaded
+    test=$(running_test)
+    echo "WiFi:      $(radio_state wlan) ($WIFI_SERVICE $(systemctl is-active "$WIFI_SERVICE" 2>/dev/null || true))"
+    echo "Bluetooth: $(radio_state bluetooth) ($BT_SERVICE $(systemctl is-active "$BT_SERVICE" 2>/dev/null || true))"
+    echo "Drivers:   $drivers"
+    echo "WiFi net:  $(wifi_client_summary)"
+    echo "EVerest:   $(everest_mode) (everest.service $(systemctl is-active everest.service 2>/dev/null || true))"
+    echo "RF test:   ${test:-none}"
+}
+
+case "$1" in
+    wifi|bt|radio|ble|everest|status)
+        command=$1
+        shift
+        "cmd_$command" "$@"
+        ;;
+    wifi-test)
+        shift
+        cmd_wifi_test "$@"
+        ;;
+    wifi-client)
+        shift
+        cmd_wifi_client "$@"
+        ;;
+    help|-h|--help|"")
+        usage
+        ;;
+    *)
+        echo "Unknown command: $1" >&2
+        usage >&2
+        exit 1
+        ;;
+esac

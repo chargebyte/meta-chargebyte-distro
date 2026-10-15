@@ -6,6 +6,7 @@ PACKAGE_ARCH = "${MACHINE_ARCH}"
 inherit packagegroup
 
 RDEPENDS:${PN} = " \
+    ${@bb.utils.contains("MACHINE", "chargesom", "ac-powerboard-certification-tools", "", d)} \
     autoconf-archive \
     ${@bb.utils.contains_any("MACHINE", "lime", "avrdude", "", d)} \
     bison \
