@@ -1,0 +1,36 @@
+[Unit]
+Description=Enable LE address resolution on TI CC33xx Bluetooth
+ConditionPathExists=/sys/module/cc33xx
+After=cc33xx-bt-enable.service
+Before=bluetooth.service
+
+[Service]
+ExecStart=@SBINDIR@/cc33xx-le-addr-resolution hci0
+Restart=on-failure
+RestartSec=1s
+DynamicUser=yes
+AmbientCapabilities=CAP_NET_RAW
+CapabilityBoundingSet=CAP_NET_RAW
+NoNewPrivileges=yes
+RestrictAddressFamilies=AF_BLUETOOTH
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+IPAddressDeny=any
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
