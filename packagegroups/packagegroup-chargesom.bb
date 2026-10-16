@@ -10,6 +10,7 @@ RDEPENDS:${PN} = " \
     cb-eeprom-utils \
     mse-nmk-store-fixup \
     cc33xx-fw \
+    cc33xx-le-addr-resolution \
     bluez5 \
     wireless-regdb-static \
     hostapd \
