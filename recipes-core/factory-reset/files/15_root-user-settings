@@ -1,0 +1,12 @@
+#!/bin/sh
+
+ROOT_HOME="$(grep '^root:' "$1/etc/passwd" | cut -d: -f6)"
+
+rm -f \
+    "$ROOT_HOME/.bash_history"
+
+rm -rf \
+    "$ROOT_HOME/.cache" \
+    "$ROOT_HOME/.config" \
+    "$ROOT_HOME/.local" \
+    "$ROOT_HOME/.ssh"

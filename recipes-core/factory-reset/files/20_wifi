@@ -1,0 +1,4 @@
+#!/bin/sh
+
+rm -f /etc/hostapd/hostapd.conf
+rm -f /etc/wpa_supplicant/*.conf

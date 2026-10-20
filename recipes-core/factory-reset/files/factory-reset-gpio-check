@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+gpio_value=$(gpioget FACTORY_RESET 2>/dev/null) || exit 0
+
+if [ "$gpio_value" = "1" ]; then
+    /usr/sbin/factory-reset --force
+
+    # A GPIO-triggered reset must prevent the normal boot from continuing.
+    while :; do
+        sleep 3600
+    done
+fi

@@ -1,0 +1,61 @@
+#!/bin/sh
+set -eu
+
+usage() {
+    echo "Usage: $0 [-f|--force] [-r|--reboot]" >&2
+}
+
+force=0
+reboot_requested=0
+
+while [ "$#" -gt 0 ]; do
+    case "$1" in
+        -f|--force)
+            force=1
+            ;;
+        -r|--reboot)
+            reboot_requested=1
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            usage
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo "factory-reset must be run as root." >&2
+    exit 1
+fi
+
+if [ "$force" -ne 1 ]; then
+    printf '%s ' "WARNING: All data will be deleted and all configuration files will be reset to factory defaults. Proceed? [y/N]"
+    IFS= read -r answer || answer=""
+    case "$answer" in
+        y|Y|yes|YES|Yes)
+            ;;
+        *)
+            echo "Factory reset cancelled."
+            exit 0
+            ;;
+    esac
+fi
+
+flag_dir=/run/factory-reset
+reboot_flag=${flag_dir}/reboot-requested
+mkdir -p "$flag_dir"
+rm -f "$reboot_flag"
+
+if [ "$reboot_requested" -eq 1 ]; then
+    : > "$reboot_flag"
+fi
+
+export FACTORY_RESET_REBOOT_FLAG="$reboot_flag"
+run-parts --report /usr/libexec/factory-reset.d
+
+rm -rf "$flag_dir"

@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+
+if [ -n "${FACTORY_RESET_REBOOT_FLAG:-}" ] && [ -e "$FACTORY_RESET_REBOOT_FLAG" ]; then
+    exec reboot
+fi
