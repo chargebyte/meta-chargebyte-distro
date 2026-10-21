@@ -1,0 +1,7 @@
+[Unit]
+Description=Rotate lighttpd logs and retain seven days of archives
+After=lighttpd.service systemd-tmpfiles-setup.service
+
+[Service]
+Type=oneshot
+ExecStart=@LIBEXECDIR@/lighttpd-logrotate
