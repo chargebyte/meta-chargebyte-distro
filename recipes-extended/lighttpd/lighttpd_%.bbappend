@@ -16,12 +16,11 @@ SRC_URI += " \
         'file://lighttpd-logrotate file://lighttpd-logrotate.service file://lighttpd-logrotate.timer', d)} \
 "
 
-PACKAGECONFIG:append = " lua"
 PACKAGECONFIG[mqtt] = ""
 # Optional features are disabled by default. HTTPS requires the openssl build option.
 PACKAGECONFIG[php-cgi] = ",,,lighttpd-module-fastcgi php-cgi"
 PACKAGECONFIG[uploadprogress] = ",,,lighttpd-module-uploadprogress"
-PACKAGECONFIG[https] = ",,,lighttpd-module-openssl openssl-bin"
+PACKAGECONFIG[https] = ",,,lighttpd-module-openssl"
 PACKAGECONFIG[logrotate] = ",,,logrotate"
 
 RDEPENDS:${PN}:append = " lighttpd-module-proxy ${@bb.utils.contains('PACKAGECONFIG', 'logrotate', '', 'gzip', d)}"
