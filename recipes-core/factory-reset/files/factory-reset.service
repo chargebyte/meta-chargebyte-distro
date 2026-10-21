@@ -1,0 +1,11 @@
+[Unit]
+Description=Factory reset GPIO trigger
+DefaultDependencies=no
+Before=sysinit.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/factory-reset-gpio-check
+
+[Install]
+WantedBy=sysinit.target

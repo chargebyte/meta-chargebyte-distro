@@ -1,0 +1,3 @@
+#!/bin/sh
+
+find /etc/mosquitto/conf.d -type f -name '*.conf' -delete 2>/dev/null || true

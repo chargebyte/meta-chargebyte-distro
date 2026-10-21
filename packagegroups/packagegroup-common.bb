@@ -14,6 +14,7 @@ RDEPENDS:${PN} = " \
     openssh \
     openssh-sftp-server \
     ethtool \
+    factory-reset \
     iproute2 \
     ldd \
     libgpiod-tools \

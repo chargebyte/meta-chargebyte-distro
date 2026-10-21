@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# rotate active journals so vacuuming also removes their existing entries
+journalctl --quiet --rotate --vacuum-size=1

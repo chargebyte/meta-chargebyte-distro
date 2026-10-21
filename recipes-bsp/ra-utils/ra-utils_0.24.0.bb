@@ -6,8 +6,8 @@ HOMEPAGE = "https://github.com/chargebyte/ra-utils"
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=86d3f3a95c324c9479bd8986968f4327"
 
-SRCREV = "caea4bcda9b5acaf08a515c27dfbf32d81f424f2"
-PV = "0.23.0+git${SRCPV}"
+SRCREV = "75b14ead3db213d9407bc25d8725cb6280479e95"
+PV = "0.24.0+git${SRCPV}"
 
 SRC_URI = "git://github.com/chargebyte/ra-utils.git;protocol=https;branch=main"
 S = "${WORKDIR}/git"
@@ -15,6 +15,9 @@ S = "${WORKDIR}/git"
 inherit bash-completion cmake pkgconfig systemd
 
 DEPENDS = "libgpiod libyaml systemd"
+
+# required for factory reset
+RDEPENDS:${PN} += "systemd-analyze"
 
 PACKAGES =+ "${PN}-fw-chargesom ${PN}-fw-parsley"
 

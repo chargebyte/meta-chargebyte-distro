@@ -1,0 +1,6 @@
+#!/bin/sh
+
+find \
+    /etc/systemd/system \
+    /etc/systemd/network \
+    -mindepth 1 ! -name '.keep-during-fw-update' -delete 2>/dev/null || true
