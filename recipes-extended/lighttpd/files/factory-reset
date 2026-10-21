@@ -1,0 +1,15 @@
+#!/bin/sh
+set -eu
+
+# Stop upload handlers and release sockets and private temporary files first.
+systemctl stop lighttpd.service
+
+# Cache subdirectories are recreated by systemd-tmpfiles on the next boot;
+# systemd manages the runtime directory through RuntimeDirectory=lighttpd.
+for directory in \
+    @LOCALSTATEDIR@/cache/lighttpd \
+    @LOCALSTATEDIR@/log/lighttpd \
+    /run/lighttpd; do
+    [ -d "$directory" ] && [ ! -L "$directory" ] || continue
+    find "$directory" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+done

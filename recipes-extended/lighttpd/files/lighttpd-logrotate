@@ -1,0 +1,36 @@
+#!/bin/sh
+set -eu
+
+logdir=@LOCALSTATEDIR@/log/lighttpd
+[ -d "$logdir" ] || exit 0
+
+day=$(date +%Y%m%d)
+rotated=false
+for log in "$logdir"/*.log; do
+    [ -f "$log" ] && [ ! -L "$log" ] && [ -s "$log" ] || continue
+    archive="$log.$day"
+    # Do not overwrite an archive if the service runs twice on the same day.
+    [ ! -e "$archive" ] && [ ! -L "$archive" ] && [ ! -e "$archive.gz" ] || continue
+
+    # Delay compression until the next rotation, after lighttpd has reopened
+    # its logs. Keep the most recent archive uncompressed.
+    for previous in "$log".[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]; do
+        [ -f "$previous" ] && [ ! -L "$previous" ] || continue
+        gzip -- "$previous"
+    done
+    mv -- "$log" "$archive"
+    # Retention starts at rotation, even if the last log entry is much older.
+    touch -- "$archive"
+    rotated=true
+done
+
+if "$rotated" && systemctl is-active --quiet lighttpd.service; then
+    systemctl kill --kill-who=main --signal=USR1 lighttpd.service
+fi
+
+# Also expire archives when current logs are empty or missing. gzip preserves
+# mtime, so compressed and uncompressed archives use the same retention age.
+find "$logdir" -maxdepth 1 -type f \
+    \( -name '*.log.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]' \
+    -o -name '*.log.[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9].gz' \) \
+    -mtime +6 -exec rm -- {} \;
