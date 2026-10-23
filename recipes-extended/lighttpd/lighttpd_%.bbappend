@@ -23,7 +23,17 @@ PACKAGECONFIG[uploadprogress] = ",,,lighttpd-module-uploadprogress"
 PACKAGECONFIG[https] = ",,,lighttpd-module-openssl"
 PACKAGECONFIG[logrotate] = ",,,logrotate"
 
-RDEPENDS:${PN}:append = " lighttpd-module-proxy ${@bb.utils.contains('PACKAGECONFIG', 'logrotate', '', 'gzip', d)}"
+# Modules loaded unconditionally by the static configuration.
+RDEPENDS:${PN}:append = " \
+    lighttpd-module-access \
+    lighttpd-module-alias \
+    lighttpd-module-auth \
+    lighttpd-module-authn-file \
+    lighttpd-module-proxy \
+    lighttpd-module-redirect \
+    lighttpd-module-rewrite \
+    ${@bb.utils.contains('PACKAGECONFIG', 'logrotate', '', 'gzip', d)} \
+"
 SYSTEMD_SERVICE:${PN}:append = " ${@bb.utils.contains('PACKAGECONFIG', 'logrotate', '', 'lighttpd-logrotate.timer', d)}"
 
 python __anonymous() {
