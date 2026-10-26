@@ -13,6 +13,7 @@ deltask do_package
 deltask do_packagedata
 deltask do_package_qa
 deltask do_package_write_deb
+deltask do_package_write_rpm
 do_install[nostamp] = "1"
 
 do_install() {
