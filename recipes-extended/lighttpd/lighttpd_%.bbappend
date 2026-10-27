@@ -43,9 +43,12 @@ python __anonymous() {
 }
 
 do_install:append() {
+    # Remove the obsolete empty fragment directory created by the base recipe.
+    rmdir ${D}${sysconfdir}/lighttpd.d
+
     # install mimetype mappings
-    install -d ${D}${sysconfdir}/lighttpd.d
-    install -m 0644 ${WORKDIR}/10-mime-types.conf ${D}${sysconfdir}/lighttpd.d/
+    install -d ${D}${sysconfdir}/lighttpd/conf.d
+    install -m 0644 ${WORKDIR}/10-mime-types.conf ${D}${sysconfdir}/lighttpd/conf.d/
 
     # create empty /www folder, removing Yocto upstream's defaults
     rm -rf ${D}/www
@@ -53,27 +56,27 @@ do_install:append() {
 
     # MQTT configuration
     if ${@bb.utils.contains('PACKAGECONFIG', 'mqtt', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/20-mqtt.conf ${D}${sysconfdir}/lighttpd.d/
+        install -m 0644 ${WORKDIR}/20-mqtt.conf ${D}${sysconfdir}/lighttpd/conf.d/
     fi
 
     if ${@bb.utils.contains_any('PROJECT', 'truffle cardamom', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/30-truffle-cardamom.conf ${D}${sysconfdir}/lighttpd.d/
+        install -m 0644 ${WORKDIR}/30-truffle-cardamom.conf ${D}${sysconfdir}/lighttpd/conf.d/
     fi
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'php-cgi', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/40-php-cgi.conf ${D}${sysconfdir}/lighttpd.d/
+        install -m 0644 ${WORKDIR}/40-php-cgi.conf ${D}${sysconfdir}/lighttpd/conf.d/
         if ${@bb.utils.contains('PACKAGECONFIG', 'uploadprogress', 'true', 'false', d)}; then
             sed -i 's|/usr/bin/php-cgi"|/usr/bin/php-cgi -d upload_max_filesize=450M -d post_max_size=460M"|' \
-                ${D}${sysconfdir}/lighttpd.d/40-php-cgi.conf
+                ${D}${sysconfdir}/lighttpd/conf.d/40-php-cgi.conf
         fi
     fi
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'uploadprogress', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/50-uploadprogress.conf ${D}${sysconfdir}/lighttpd.d/
+        install -m 0644 ${WORKDIR}/50-uploadprogress.conf ${D}${sysconfdir}/lighttpd/conf.d/
     fi
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'https', 'true', 'false', d)}; then
-        install -m 0644 ${WORKDIR}/60-https.conf ${D}${sysconfdir}/lighttpd.d/
+        install -m 0644 ${WORKDIR}/60-https.conf ${D}${sysconfdir}/lighttpd/conf.d/
         install -d -m 0700 ${D}${sysconfdir}/lighttpd/certs
     fi
 
