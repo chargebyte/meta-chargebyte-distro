@@ -24,4 +24,5 @@ RDEPENDS:${PN} = " \
     linux-firmware-rtl8192su \
     linux-firmware-rtl8723 \
     linux-firmware-rtl8821 \
+    linux-firmware-rtl8821c \
 "
