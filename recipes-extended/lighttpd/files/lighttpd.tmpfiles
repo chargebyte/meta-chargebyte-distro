@@ -1,0 +1,5 @@
+# Type Path Mode User Group Age
+d @LOCALSTATEDIR@/log/lighttpd 0750 www-data www-data -
+d @LOCALSTATEDIR@/cache/lighttpd 0755 root root -
+d @LOCALSTATEDIR@/cache/lighttpd/uploads 0750 www-data www-data -
+d @LOCALSTATEDIR@/cache/lighttpd/compress 0750 www-data www-data -

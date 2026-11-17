@@ -1,11 +1,10 @@
 [Unit]
 Description=Lighttpd Daemon
-After=network-online.target
+After=network-online.target systemd-tmpfiles-setup.service
 
 [Service]
 Type=simple
 PIDFile=/var/run/lighttpd/lighttpd.pid
-ExecStartPre=-+/usr/bin/install -d -m 0770 -o root -g www-data /var/run/lighttpd
 ExecStartPre=-+/usr/bin/install -d -m 0750 -o www-data -g www-data /var/log/lighttpd
 ExecStartPre=/usr/sbin/lighttpd -tt -f /etc/lighttpd/lighttpd.conf
 ExecStart=/usr/sbin/lighttpd -D -f /etc/lighttpd/lighttpd.conf
