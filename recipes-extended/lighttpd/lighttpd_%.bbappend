@@ -77,7 +77,8 @@ do_install:append() {
 
     if ${@bb.utils.contains('PACKAGECONFIG', 'https', 'true', 'false', d)}; then
         install -m 0644 ${WORKDIR}/60-https.conf ${D}${sysconfdir}/lighttpd/conf.d/
-        install -d -m 0700 ${D}${sysconfdir}/lighttpd/certs
+        # lighttpd runs as www-data; file permissions protect the private key.
+        install -d -m 0755 ${D}${sysconfdir}/lighttpd/certs
     fi
 
     # Create volatile log/cache directories at boot, for either rotation backend.
